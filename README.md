@@ -227,7 +227,7 @@ VMX-0(p vty)# show nhdb id 607 extensive
 -----  --------  -------------  ---------------  ----------  ------------  ----  ------------------  ------------------
   607   Unicast  ge-0/0/1.0     -                MPLS->IPv6      Ethernet  9178  0x0000000000200001  0x0000000000000002
 ```
-In theory that would mean for our IPv4 packet it tries to put an IPv4 payload in an Ethernet frame with Ethertype 0x86dd (IPv6).  This is an invalid packet, so I'm guessing the PE ends up dropping it somewhere internally.
+In theory that would mean the P router tries to place the IPv4 payload in an Ethernet frame with Ethertype 0x86dd (IPv6).  This is an invalid packet, so I'm guessing the P ends up dropping it somewhere internally instead.
 
 But with either explicit or implicit null enabled the results are clear: Juniper applies a fixed set of label and encap operations for a packet using this LSP.  Because the prefix that created the LSP is an IPv6 address those operations match what is needed to carry IPv6.  If we try to send IPv4 packets over this LSP they don't get to the destination, either being dropped at PE2 when using explicit null (because label=2 directs it to use inet6.0), or at the P router when using implicit null (which can't put an IPv4 packet inside an Ethernet frame with IPv6 Ethertype).
 
