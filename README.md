@@ -161,7 +161,7 @@ MultiProtocol Label Switching Header, Label: 2 (IPv6 Explicit-Null), Exp: 0, S: 
 Internet Protocol Version 4, Src: 203.0.113.1, Dst: 203.0.113.2
 Internet Control Message Protocol
 ```
-But interestingly if we show this in tcpdump it claims the packet is invalid, it does not think there should be an IPv4 packet inside an MPLS label of '2':
+But interestingly with tcpdump it shows up as invalid, tcpdump does not think there should be an IPv4 packet inside an MPLS label of '2':
 ```
 18:15:20.803764 aa:c1:ab:1c:a4:04 > aa:c1:ab:aa:c0:85, ethertype MPLS unicast (0x8847), length 102: MPLS (label 2 (IPv6 explicit NULL), tc 0, [S], ttl 62)
 	 [version 4 != 6] (invalid)
