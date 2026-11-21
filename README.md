@@ -38,6 +38,7 @@ The most basic form ("implicit null") involves the last P router **popping** the
 Another form of PHP is also defined, called "explicit null" (see [RFC 3032](https://www.rfc-editor.org/rfc/rfc3032.html#section-2)).  In this case the last P router performs a label **swap** operation, applying a well-known label to the packet which indicates the payload protocol.  Specifically the explicit null label can be:
 
 0 - Indicating the payload is an IPv4 packet
+
 2 - Indicating the payload is an IPv6 packet
 
 ### MPLS Label Operations
