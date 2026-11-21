@@ -90,7 +90,7 @@ inet6.3: 2 destinations, 2 routes (2 active, 0 holddown, 0 hidden)
 2001:db8:10::3/128 *[L-ISIS/14] 03:23:25, metric 201
                     >  to fe80::aac1:abff:fedc:446f via ge-0/0/1.0, Push 400003
 ```
-Accordingly if we look at routes originated by CE2 again we see that the same label will be used to get to those, due to the recursive lookup of the next-hop:
+If we look at routes originated by CE2 again we see that PE1 will use the same label to get to those, based on the same next-hop:
 ```
 admin@pe1> show route table inet6.0 2001:db8:187::3/128                                               
 
