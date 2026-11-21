@@ -29,20 +29,20 @@ As a result of this any IPv4 route that CE1 announces to PE1 gets propagated to 
 
 ### Penultimate Hop Popping
 
-[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) is a technique that was introduced with the original MPLS drafts and defines the label operations the last 'P' router in an LSP performs.
+[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) is in the original MPLS standards and defines the label operations the last 'P' router in an LSP performs.
 
-The most basic form involves the last P router 'popping' the last label off the packet, leaving just the raw IPv4 or IPv6 (or other) payload.  The advantage of transmitting the packet from last P to last PE router without an MPLS label means that egress PE device only sees the IP header, and can route the packet accordingly.  If a label is used the last PE has to examine the label, and then examine what was inside that which is a more expensive operation.
+The most basic form ("implicit null") involves the last P router **popping** the last label off the packet, leaving just the raw IPv4 or IPv6 (or other) payload.  The advantage of transmitting the packet from last P to last PE router without an MPLS label means that egress PE device only sees an IP header, which it uses to forward the packet.  If a label is present between P and PE then the PE has to first examine the label, and then look at the IP header which is a more expensive operation.
 
-Another form of PHP is also defined, called "explicit null" (see [RFC 3032](https://www.rfc-editor.org/rfc/rfc3032.html#section-2)).  In this case the last P router performs a label swap operation, applying a well-known label to the packet which indicates the payload protocol.  Specifically the explicit null label can be:
+Another form of PHP is also defined, called "explicit null" (see [RFC 3032](https://www.rfc-editor.org/rfc/rfc3032.html#section-2)).  In this case the last P router performs a label **swap** operation, applying a well-known label to the packet which indicates the payload protocol.  Specifically the explicit null label can be:
 
 0 - Indicating the payload is an IPv4 packet
 2 - Indicating the payload is an IPv6 packet
 
 ### MPLS Label Operations
 
-It is easy to forget today that MPLS was developed at a time when doing longest-prefix matching in hardware was considered by some to be an impossibility, and at a time when telco's were still keen on technologies such as ATM, which switched based on fixed-length virtual-circuit identifiers.  [RFC 3031](https://www.rfc-editor.org/info/rfc3031/#section-2.1) alludes to this stating _"MPLS forwarding can be done by switches which are capable of doing label lookup and replacement, but are either not capable of analyzing the network layer headers, or are not capable of analyzing the network layer headers at adequate speed."_  MPLS's immediate predecessor, Cisco's tag switching, alludes to how the technology could be adapted to run on the ATM switches of the time, with [RFC2105](https://www.rfc-editor.org/info/rfc2105/#section-5) stating that _"implementing tag switching on an ATM switch would simplify integration of ATM switches and routers - an ATM switch capable of tag switching would appear as a router to an adjacent router."_
+It is easy to forget today that MPLS was developed at a time when doing longest-prefix matching in hardware was considered by some to be an impossibility, and at a time when telco's were still keen on technologies such as ATM, which switched based exact matching of fixed-length virtual-circuit identifiers.  [RFC 3031](https://www.rfc-editor.org/info/rfc3031/#section-2.1) alludes to this stating _"MPLS forwarding can be done by switches which are capable of doing label lookup and replacement, but are either not capable of analyzing the network layer headers, or are not capable of analyzing the network layer headers at adequate speed."_  One of the protocols immediate predecessors, Cisco's tag switching, alludes to how the technology could be adapted to run on the ATM switches of the time, with [RFC2105](https://www.rfc-editor.org/info/rfc2105/#section-5) stating that _"implementing tag switching on an ATM switch would simplify integration of ATM switches and routers - an ATM switch capable of tag switching would appear as a router to an adjacent router."_
 
-Why this may be relevant will emerge when we look at the observed behaviour of the routers in our virtual labs.  Some other statements from RFC 3031 include:
+TCAMs that could perform LPM in hardware had become available by the time MPLS began to be widely deployed, but MPLS gained wide adoption anyway because of its other properties.  Nonetheless it is worth remembering this background when considering how it works, why it is relevant will become clear when we observe the behaviour of the devices in our virtual labs.  Two more statements from RFC 3031 worth bearing in mind include:
 
 _"In MPLS, the assignment of a particular packet to a particular FEC is done just once, as the packet enters the network."_
 
