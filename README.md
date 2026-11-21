@@ -1,13 +1,13 @@
-# IPv4 routes with IPv6 next-hops + MPLS
+# IPv4 routes with IPv6 next-hops & MPLS
 
 ## Background
 
-Daryll Swer nerd-sniped me on this one a few weeks back, drawing my attention to a "bug" in Juniper MX devices whereby IPv4 traffic could not be carried over an MPLS network which had an IPv6-only core.  He further said the same setup works just fine with Arista devices.
+[Daryll Swer](https://www.swernetworks.com/author/daryll-swer/) nerd-sniped me on this one a few weeks back, drawing my attention to a "bug" in Juniper MX devices whereby IPv4 traffic could not be carried over an MPLS network with an IPv6-only core.  He further said the same setup works just fine with Arista devices.
 
 The question piqued my interest for two reasons:
 
-1. Why exactly it wasn't working, or could it be made to work
-2. Should it work, according to the standards?
+1. Why exactly doesn't work, and can it be made to work?
+3. What do the standards say about this kind of scenario?  What should we expect here?
 
 ## Scenario
 
