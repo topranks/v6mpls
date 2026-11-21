@@ -13,7 +13,7 @@ This repo has [containerlab](https://containerlab.dev/) topologies with pre-buil
 
 ## Scenario
 
-The exact scenario we want to look at is where we have an MPLS network, composed of PE and P routers, which only have IPv6 addressing on their links, and only an IPv6 loopback address. To test the how such a network behaves when PEs have external IPv4 routes we create the most basic virtual lab we can, consisting of only three routers, PE1, P and PE2.
+The exact scenario we want to look at is where we have an MPLS network, composed of PE and P routers, which only have IPv6 addressing on their links, and only an IPv6 loopback address. To test how such a network behaves when PEs have external IPv4 routes, we create the most basic virtual lab we can, consisting of only three routers, PE1, P and PE2.
 
 Configuration wise we enable an IGP on link and loopback interfaces, in this lab IS-IS.  We also enable MPLS, and for most of the tests use [SR-MPLS](https://www.rfc-editor.org/info/rfc8660/) with signalling carried in IS-IS itself, but also for completeness test with [LDP](https://www.ietf.org/proceedings/85/rfc/rfc5036.txt) in one lab.
 
