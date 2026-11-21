@@ -6,7 +6,7 @@
 
 The question piqued my interest for two reasons:
 
-1. Why exactly doesn't work, and can it be made to work?
+1. Why exactly doesn't it work, and can it be made to work?
 3. What do the standards say about this kind of scenario?  What should we expect to happen?
 
 This repo has [containerlab](https://containerlab.dev/) topologies with pre-built configurations to try to answer these questions.
