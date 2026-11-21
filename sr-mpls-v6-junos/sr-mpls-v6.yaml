@@ -1,0 +1,57 @@
+name: sr-mpls-v6-junos
+mgmt:
+  network: sr-mpls-v6
+  bridge: clab
+  external-access: false
+topology:
+  kinds:
+    juniper_vjunosrouter:
+      env:
+        QEMU_CPU: host,+invtsc
+      image: vrnetlab/juniper_vjunos-router:25.4R1-S2.3
+      startup-config: startup_configs/__clabNodeName__.cfg
+    linux:
+      image: debian:clab
+      binds:
+        - startup_configs/__clabNodeName__/frr:/etc/frr
+  nodes:
+    ce1:
+      kind: linux
+      exec:
+        - ip addr add 198.51.100.2/30 dev eth1
+        - ip addr add 2001:db8:50::3/127 dev eth1
+        - ip addr add 203.0.113.1/32 dev lo
+        - ip addr add 2001:db8:187::2/128 dev lo
+        - /etc/init.d/frr start
+    # vJunos boot sequentially: p, then pe1 once p is healthy, then pe2
+    p:
+      kind: juniper_vjunosrouter
+    pe1:
+      kind: juniper_vjunosrouter
+      stages:
+        create:
+          wait-for:
+            - node: p
+              stage: healthy
+    pe2:
+      kind: juniper_vjunosrouter
+      stages:
+        create:
+          wait-for:
+            - node: pe1
+              stage: healthy
+    ce2:
+      kind: linux
+      exec:
+        - ip addr add 198.51.100.6/30 dev eth1
+        - ip addr add 2001:db8:50::5/127 dev eth1
+        - ip addr add 203.0.113.2/32 dev lo
+        - ip addr add 2001:db8:187::3/128 dev lo
+        - /etc/init.d/frr start
+
+  links:
+    - endpoints: ["pe1:eth1", "ce1:eth1"]
+    - endpoints: ["pe1:eth2", "p:eth1"]
+    - endpoints: ["p:eth2", "pe2:eth2"]
+    - endpoints: ["pe2:eth1", "ce2:eth1"]
+

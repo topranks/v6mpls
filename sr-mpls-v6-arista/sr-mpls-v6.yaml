@@ -1,0 +1,47 @@
+name: sr-mpls-v6-arista
+mgmt:
+  network: sr-mpls-v6
+  bridge: clab
+  external-access: false
+topology:
+  kinds:
+    arista_ceos:
+      image: ceos:latest
+      binds:
+        - int_mapping.json:/mnt/flash/EosIntfMapping.json:ro
+      startup-config: startup_configs/__clabNodeName__.cfg
+      env:
+        CLAB_MGMT_VRF: MGMT
+    linux:
+      image: debian:clab
+      binds:
+        - startup_configs/__clabNodeName__/frr:/etc/frr
+  nodes:
+    ce1:
+      kind: linux
+      exec:
+        - ip addr add 198.51.100.2/30 dev eth1
+        - ip addr add 2001:db8:50::3/127 dev eth1
+        - ip addr add 203.0.113.1/32 dev lo
+        - ip addr add 2001:db8:187::2/128 dev lo
+        - /etc/init.d/frr start
+    pe1:
+      kind: arista_ceos
+    p:
+      kind: arista_ceos
+    pe2:
+      kind: arista_ceos
+    ce2:
+      kind: linux
+      exec:
+        - ip addr add 198.51.100.6/30 dev eth1
+        - ip addr add 2001:db8:50::5/127 dev eth1
+        - ip addr add 203.0.113.2/32 dev lo
+        - ip addr add 2001:db8:187::3/128 dev lo
+        - /etc/init.d/frr start
+
+  links:
+    - endpoints: ["pe1:eth1", "ce1:eth1"]
+    - endpoints: ["pe1:eth2", "p:eth1"]
+    - endpoints: ["p:eth2", "pe2:eth2"]
+    - endpoints: ["pe2:eth1", "ce2:eth1"]
