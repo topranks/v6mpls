@@ -174,7 +174,7 @@ mpls.0: 11 destinations, 11 routes (11 active, 0 holddown, 0 hidden)
                        to table inet6.0
 ```
 
-This label operation is hard-coded in JunOS.  Any packet arriving with an MPLS label of 2 is then looked up in the inet6 forwarding table.  Which works fine if the source is an IPv6 packet, but obviously looking up an IPv4 destination in the IPv6 routing table will fail, so the packet just gets dropped.
+This label operation is hard-coded in JunOS.  Any packet arriving with an MPLS label of 2 is looked up in the inet6 forwarding table.  Which works fine if the source is an IPv6 packet, but obviously looking up an IPv4 destination in the IPv6 routing table will fail, so the packet just gets dropped.
 
 #### What about implicit-null?
 
