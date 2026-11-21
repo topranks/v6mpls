@@ -137,9 +137,11 @@ If we do a capture on the link from P to PE2 we can see how the echo request pac
 ```
 Frame 1: 122 bytes on wire (976 bits), 122 bytes captured (976 bits)
 Ethernet II, Src: aa:c1:ab:1c:a4:04 (aa:c1:ab:1c:a4:04), Dst: aa:c1:ab:aa:c0:85 (aa:c1:ab:aa:c0:85)
+    Type: MPLS label switched packet (0x8847)
 MultiProtocol Label Switching Header, Label: 2 (IPv6 Explicit-Null), Exp: 0, S: 1, TTL: 62
 Internet Protocol Version 6, Src: 2001:db8:187::2, Dst: 2001:db8:187::3
 Internet Control Message Protocol v6
+
 ```
 
 If we try to ping from CE1 to CE2 over the IPv4 loopbacks it fails, however:
@@ -154,14 +156,15 @@ Looking on the wire from P to PE2 we can see the frame is transmitted to PE2:
 ```
 Frame 1: 102 bytes on wire (816 bits), 102 bytes captured (816 bits)
 Ethernet II, Src: aa:c1:ab:1c:a4:04 (aa:c1:ab:1c:a4:04), Dst: aa:c1:ab:aa:c0:85 (aa:c1:ab:aa:c0:85)
+    Type: MPLS label switched packet (0x8847)
 MultiProtocol Label Switching Header, Label: 2 (IPv6 Explicit-Null), Exp: 0, S: 1, TTL: 62
 Internet Protocol Version 4, Src: 203.0.113.1, Dst: 203.0.113.2
 Internet Control Message Protocol
 ```
 But interestingly if we show this in tcpdump it claims the packet is invalid, it does not think there should be an IPv4 packet inside an MPLS label of '2':
 ```
-18:15:20.803764 MPLS (label 2 (IPv6 explicit NULL), tc 0, [S], ttl 62)
-	IP6  [version 4 != 6] (invalid)
+18:15:20.803764 aa:c1:ab:1c:a4:04 > aa:c1:ab:aa:c0:85, ethertype MPLS unicast (0x8847), length 102: MPLS (label 2 (IPv6 explicit NULL), tc 0, [S], ttl 62)
+	 [version 4 != 6] (invalid)
 ```
 What is happening when the packet reaches PE2 then?  If we look at the MPLS forwarding table it becomes clear enough:
 ```
