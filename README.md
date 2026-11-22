@@ -15,8 +15,11 @@ The question piqued my interest for two reasons:
 
 ## Scenario
 
-The exact scenario we want to look at is where we have an MPLS network, composed of PE and P routers, which only have IPv6 addressing on their links, and only an IPv6 loopback address. 
-If we connect external IPv4 networks to the PEs, can we use the MPLS LSPs built across the IPv6 core to transport them across the network?  In the containerlab topologies we use the most basic network of this kind that we can, with only three core routers, PE1, P and PE2.
+The exact scenario we want to look at is where we have an MPLS network, composed of PE and P routers, which only have IPv6 addressing on their links, and only an IPv6 loopback address.
+
+If we connect external IPv4 networks to the PEs, can we use the MPLS LSPs built across the IPv6 core to transport them across the network?  The scenario is the same as that described in the [4PE](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10) RFC draft.
+
+In the containerlab topologies we use the most basic network of this kind that we can, with only three core routers, PE1, P and PE2.
 
 Configuration wise we enable an IGP on link and loopback interfaces, in this lab IS-IS.  We also enable MPLS, and for most of the tests use [SR-MPLS](https://www.rfc-editor.org/info/rfc8660/) with signalling carried in IS-IS itself, but also for completeness test with [LDP](https://www.ietf.org/proceedings/85/rfc/rfc5036.txt) in one lab.
 
@@ -388,15 +391,37 @@ Standards don't mention it - but they probably couldn't imagine it.  Time of wri
 
 ### 4PE
 
-4PE is conceptually the "opposite of 6PE ([RFC4798](https://www.rfc-editor.org/info/rfc4798/))".  An internet draft, [draft-mishra-idr-v4-islands-v6-core-4pe-10](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10)), titled "Connecting IPv4 Islands over IPv6 Core using IPv4 Provider Edge Routers (4PE)" was published several years back.
+4PE is conceptually the "opposite of 6PE ([RFC4798](https://www.rfc-editor.org/info/rfc4798/))".  An internet draft, [draft-mishra-idr-v4-islands-v6-core-4pe-10](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10)), titled "Connecting IPv4 Islands over IPv6 Core using IPv4 Provider Edge Routers (4PE)" has been worked on in recent years to address.
 
-Section 4 of the draft standards acknowledges the problem with implicit null at last P.  It doesn't refer to Ethertype.  "With the Default implicit-null Penultimate Hop (PHP) mode, the egress LSR P node would POP the topmost label revealing the native IPv4 packet which would be subsequently dropped as the Core underlay is an IPv6-Only core."  <--- I think this gets it wrong though, it doesn't POP + new routing lookup, it's label lookup -> pop+encap rule.  The packet after popping may be IPv4, but many platforms don't look at it, instead the ingress label points to a and on an Ethernet link to set the correct destination MAC address and Ethertype.
+It presents various potential ways to solve the problem.  The options in sectino 8.1, 8.2 and 8.3 all involve using [BGP labelled unicast](https://datatracker.ietf.org/doc/html/rfc8277) to send a label with each IPv4 BGP route announced between PEs, and to add this label at the ingress PE before adding the transport label for the destination PE loopback.  While that neatly solves the issue we would prefer to deal with it without having to put label information into BGP routes.
 
+Section 8.4 of the 4PE draft describes a scenario that operates without BGP-LU.  PHP is not used on the penultimate P, so the packet arrives at the egress PE with the transport label intact.  The egress PE pops the transport label, then needs to inspect the remaining packet protocol version (IPv4 or IPv6) and then look up the destination IP in the appropriate routing table.  It cannot infer the address family or table for IP route lookup from the label.
 
-"8.4. Arbitrary topmost with customer prefixes unlabeled" - a random label for the IPv6 loopback is assigned, egress PE advertises it to neighbors, and says it does not want PHP??
+Section 8.5 of the 4PE draft describes a similar situation, but with IPv6 explicit-null (2) signalled by the egress PE for the v6 loopback label.  This scenario is similar to what we observed in the Juniper lab with explicit null enabled.  The packet uses the single-label transport across the core, then at the last P router the label is swapped for '2' and it is forwarded to the PE.  This packet is technically invalid, label=2, S(last label)=1, payload=IPv4.  Only IPv6 should be contained within such a packet.  Juniper PEs as we seen fail to process this packet arriving.  Arista we observed does not assume label=2 means IPv6, despite that being in the standards, and instead inspects the packet as it would for the 4PE mode in section 8.4.
 
-"8.5 - Explicit Null topmost with customer prefixes unlabeled" - this is the mode we see the Juniper doing but failing to process.  it means forward it all the way, do explicit null swap on last PE of 16003 -> 2, and then have the egress PE pop the '2', but look at the payload and route dynamically.
+### Alternative options?
 
+I believe there are other options beyond those envisioned in the 4PE draft, which may or may not be more practical.
+
+1 - Implicit null signalled for IPv6 loopback by PE, no BGP-LU, with P inspecting IP version
+
+The IPv6 prefix label is signalled with label=3 / implicit null requested and PHP enabled.  With this option the ingress PE applies a single label, of the LSP to the egress PE loopback, and uses it for both v4 and v6 packets.  No inner label is added.
+
+The last P router pops this label as the LSP is built with implicit null.  What remains is an IPv6 or IPv4 packet, the P router cannot know which type based on the ingress label alone as the same label is used for both.  So the P router needs to:
+
+* Use the ingress label to determine the outgoing interface and next-hop MAC address
+** It only knows IGP routes so can't use the destination IP to find this
+* Inspect the packet to see what IP version it is, and set the Ethertype on the frame based on this
+
+The PE router in this case also needs to be able to deal with a frame arriving on an interface with no IPv4 addressing that has an IPv4 Ethertype value.
+
+2 - Add explicit null labelling on ingress PE based on address fam, no BGP-LU
+
+In this case the LSP can be set up for any mode of operation (no PHP, explicit null, implicit null).  In each of those cases it will operate as described in the 4PE draft sections 8.1.2, 8.2.2 and 8.3.2 respectively.
+
+The difference is that each of those options in the draft use BGP-LU to announce the IPv4 routes to PEs with the label of '0'.  It should be possible, instead of using BGP-LU, to always impose the label of 0 based on the fact the packet is IPv4.
+
+In this mode, for symmetry, I think it would make sense for the ingress PE to do the same and impose an inner label of '2' for all IPv6 packets.  
 
 
 
