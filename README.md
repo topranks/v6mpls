@@ -19,29 +19,29 @@ The exact scenario we want to look at is where we have an MPLS network, composed
 
 If we connect external IPv4 networks to the PEs, can we use the MPLS LSPs built across the IPv6 core to transport them across the network?  The scenario is the same as that described in the [4PE](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10) RFC draft.
 
-In the containerlab topologies we use the most basic network of this kind that we can, with only three core routers, PE1, P and PE2, and two CEs, one connected to each PE.
+In the containerlab topologies we use the most basic network of this kind possible, with three core routers, PE1, P and PE2, and two CEs, one connected to each PE.
 
-Configuration wise we enable an IGP on link and loopback interfaces, in this lab IS-IS.  We also enable MPLS, and for most of the tests use [SR-MPLS](https://www.rfc-editor.org/info/rfc8660/) with signalling carried in IS-IS itself, but also for completeness test with [LDP](https://www.ietf.org/proceedings/85/rfc/rfc5036.txt) in one lab.
+Configuration wise we enable an IGP on link and loopback interfaces, in this lab IS-IS.  We also enable MPLS, and for most of the tests use [SR-MPLS](https://www.rfc-editor.org/info/rfc8660/) with signalling carried in [IS-IS](https://www.rfc-editor.org/info/rfc8667/) itself, but also for completeness test with [LDP](https://www.ietf.org/proceedings/85/rfc/rfc5036.txt) in one lab.
 
-With that in place every PE learns a route for the IPv6 loopback of every other PE through IS-IS, and an MPLS LSP is built to use for traffic to that IP.
+Every PE learns a route for the IPv6 loopback of every other PE through IS-IS, and an MPLS LSP is built to use for traffic to that IP.
 
 We then enable IBGP between the PE's IPv6 loopback addresses.  We enable both IPv6 and IPv4 address families on the IBGP sessions, and configure the PEs to use the methods described in [RFC 8950]https://www.rfc-editor.org/info/rfc8950/) to advertise IPv4 addresses with a next-hop of their IPv6 loopback.
 
-Lastly we connect two CE devices to the network.  One is connected to PE1, the other to PE2.  The CE devices have two EBGP sessions each to the PEs.  One over the IPv6 addressing on the link from PE to CE, and another over the IPv4 addressing from PE to CE.  This IPv4 link addressing facing the CEs is the only IPv4 addressing on the "core" network.
+The CE devices have two EBGP sessions each to the PEs.  One over the IPv6 addressing on the link from PE to CE, and another over the IPv4 addressing from PE to CE.  This IPv4 link addressing facing the CEs is the only IPv4 addressing on the "core" network.
 
 [![v6mpls lab topology](diagram/v6mpls_lab.png)](diagram/v6mpls_lab.pdf?raw=true)
 
-As a result of this any IPv4 route that CE1 announces to PE1 gets propagated to PE2 in IBGP, with the next-hop set to the loopback IPv6 address of PE1.  The question we want to answer is what will PE2 on receipt of this route?  Given that the next-hop is an IPv6 address - _reachable via an MPLS path_ - will the route be installed?  And how will the data-plane encapsulation work on the wire for traffic to this destination?
+The IPv4 route PE1 learns from CE1 is announced to PE2 with a next-hop of the PE1 IPv6 loopback address.  The question we want to answer is what will PE2 on receipt of this route?  Given that the next-hop is an IPv6 address - _reachable via an MPLS path_ - will the route be installed?  And how will the data-plane encapsulation work on the wire for traffic to this destination?
 
 ## Protocol Notes
 
 ### Penultimate Hop Popping (PHP)
 
-[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) is in the original MPLS standards and defines a method by which the last 'P' router can **pop** the topmost label from the stack before the packet is transmitted to the egress PE.  As the RFC states this allows the egress PE *"to do a single lookup"*, because the packet doesn't arrive with an extra MPLS label for it to inspect.
+[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) is part of the  MPLS standards and defines a method by which the last 'P' router can **pop** the outer label from a packet before it is sent to the egress PE.  The RFC explains this allows the egress PE *"to do a single lookup"*, because the packet doesn't arrive with an extra MPLS label for it to inspect.
 
 If the last P router does not remove the topmost label we call it "ultimate hop popping" (UHP).  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  There are two modes for UHP, in the first a regular MPLS label is signalled and used, in the other a well-known "explicit null" label of either 0 (if the payload is an IPv4 packet) or 2 (for IPv6) is used.
 
-What actions the last P router will take are determined by what flags/options the egress PE sets when signalling the LSP for its loopback IP:
+What actions the last P router will take are determined by how the egress PE signals the LSP for its loopback IP:
 
 | Last-hop behaviour | P router label operation | LDP: label PE advertises | SR IS-IS: flags PE sets |
 |---|---|---|---|
@@ -49,7 +49,7 @@ What actions the last P router will take are determined by what flags/options th
 | **UHP / Explicit Null** | SWAP → 0 (IPv4) / 2 (IPv6) | 0 (IPv4 FEC) / 2 (IPv6 FEC) | P=1, E=1 |
 | **UHP / non-null label** | SWAP → egress's label³ | Normal label (≥16) | P=1, E=0 |
 
-NOTE: OSPFv3 flags when running SR are similar, but "P" is called "NP".
+NOTE: The OSPFv3 flags for SR are similar, but "P" is called "NP".
 
 ### MPLS Origins
 
