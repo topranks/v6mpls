@@ -39,9 +39,9 @@ As a result of this any IPv4 route that CE1 announces to PE1 gets propagated to 
 
 [Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) is in the original MPLS standards and defines a method by which the last 'P' router can **pop** the topmost label from the stack before the packet is transmitted to the egress PE.  As the RFC states this allows the egress PE *"to do a single lookup"*, because the packet doesn't arrive with an extra MPLS label for it to inspect.
 
-If the last P router does not remove the topmost label we call it "ultimate hop popping" (UHP), as the equivalent topmost label pop doesn't happen until the *ultimate hop*, the egress PE.  There are two modes for UHP, in the first a regular MPLS label is chosen by the gress PE and used by the last P router, in the other the egress PE signals to use well-known "explicit null" labels of either 0 (if the payload is an IPv4 packet) or 2 (for IPv6).
+If the last P router does not remove the topmost label we call it "ultimate hop popping" (UHP).  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  There are two modes for UHP, in the first a regular MPLS label is signalled and used, in the other a well-known "explicit null" label of either 0 (if the payload is an IPv4 packet) or 2 (for IPv6) is used.
 
-What actions the last P router will take are determined by what flags/options the egress PE takes when signalling the LSP:
+What actions the last P router will take are determined by what flags/options the egress PE sets when signalling the LSP for its loopback IP:
 
 | Last-hop behaviour | P router label operation | LDP: egress PE advertises | SR IS-IS (RFC 8667) egress PE advertises |
 |---|---|---|---|
@@ -51,9 +51,9 @@ What actions the last P router will take are determined by what flags/options th
 
 ¹ The packet leaves with the next label down, or as bare IP if none remains.  
 ² The E flag is only meaningful with P=1.  P = "no php" flag, E = explicit null flag  
-³ LDP: the label from the egress PE's Label Mapping. SR: the egress PE's SRGB base + prefix-SID index.
+³ LDP: the label from the egress PE's Label Mapping. SR: the egress PE's SRGB base + prefix-SID index.  
 
-NOTE: With SR + OSPFv3 the "NP" flag would be set equivalent to the "P" flag in SR + ISIS
+NOTE: With SR + OSPFv3 the "NP" flag is equivalent to the "P" flag in SR + ISIS
 
 
 ### MPLS Origins
