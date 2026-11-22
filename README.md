@@ -78,7 +78,7 @@ The labs have containerlab 'kinds' that expect to find the following image names
 
 The linux image should have FRR installed.  The vanilla debian container image with _apt install frr_ should be sufficient.
 
-### Test results
+### Lab topologies, configs and detailed test results.
 
 The topology files, startup configs and results of testing can be found in the relevtant directories in this repo:
 
@@ -86,6 +86,10 @@ The topology files, startup configs and results of testing can be found in the r
 [Cisco xRD Control Plane](sr-mpls-v6-xrd)  
 [Arista cEOS](sr-mpls-v6-arista)  
 [Juniper vJunos Router - LDP](ldp-mpls-v6-junos)  
+
+## Findings
+
+More detailed information on how each lab performed is available in the above 
 
 ## Standards
 
