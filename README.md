@@ -49,22 +49,13 @@ What actions the last P router will take are determined by what flags/options th
 | **UHP / Explicit Null** | SWAP → 0 (IPv4) / 2 (IPv6) | 0 (IPv4 FEC) / 2 (IPv6 FEC) | P=1, E=1 |
 | **UHP / non-null label** | SWAP → egress's label³ | Normal label (≥16) | P=1, E=0 |
 
-¹ The packet leaves with the next label down, or as bare IP if none remains.  
-² The E flag is only meaningful with P=1.  P = "no php" flag, E = explicit null flag  
-³ LDP: the label from the egress PE's Label Mapping. SR: the egress PE's SRGB base + prefix-SID index.  
-
-NOTE: With SR + OSPFv3 the "NP" flag is equivalent to the "P" flag in SR + ISIS
-
+NOTE: OSPFv3 flags when running SR are similar, but "P" is called "NP".
 
 ### MPLS Origins
 
 It is easy to forget today that MPLS was developed at a time when doing longest-prefix matching in hardware was considered by some to be an impossibility, and when telco's were still keen on technologies such as [ATM](https://en.wikipedia.org/wiki/Asynchronous_Transfer_Mode), which switched "cells" by doing exact-matches on fixed-length headers.  [RFC 3031](https://www.rfc-editor.org/info/rfc3031/#section-2.1) alludes to this stating _"MPLS forwarding can be done by switches which are capable of doing label lookup and replacement, but are either not capable of analyzing the network layer headers, or are not capable of analyzing the network layer headers at adequate speed."_
 
 Hardware quickly made such concerns irrelevant, and by the time MPLS was being widely deployed we had TCAMs and routers that could do LPM matching in hardware.  Nonetheless the legacy of the initial approach is present in much of how MPLS operates.  The protocol implementation makes several choices which seem designed to minimise the number of packet headers that need to be checked, and forwarding tables that need to be consulted, as packets are forwarded through devices.
-
-
-
-
 
 
 ## Labs
