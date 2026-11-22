@@ -35,37 +35,33 @@ As a result of this any IPv4 route that CE1 announces to PE1 gets propagated to 
 
 ## Protocol Notes
 
-### Penultimate Hop Popping
+### Penultimate Hop Popping (PHP)
 
-[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) is in the original MPLS standards and defines a method by which the last 'P' router can **pop** the topmost label from the stack.  As the RFC states this allows the next router - the egress PE - "to do a single lookup" as the packet arrives without the label corresponding to its own loopback IP.
+[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) is in the original MPLS standards and defines a method by which the last 'P' router can **pop** the topmost label from the stack before the packet is transmitted to the egress PE.  As the RFC states this allows the egress PE *"to do a single lookup"*, because the packet doesn't arrive with an extra MPLS label for it to inspect.
 
-PEs in the MPLS network signal 
+If the last P router does not remove the topmost label we call it "ultimate hop popping" (UHP), as the equivalent topmost label pop doesn't happen until the *ultimate hop*, the egress PE.  There are two modes for UHP, in the first a regular MPLS label is chosen by the gress PE and used by the last P router, in the other the egress PE signals to use well-known "explicit null" labels of either 0 (if the payload is an IPv4 packet) or 2 (for IPv6).
 
-| Last-hop behaviour | Operation on the last P router | Egress PE LDP (Loopback FEC)| Egress PE SR-MPLS (Loopback Prefix-SID)|
-|---|---|---|---|
-| **UHP – non-null label** (No-PHP) | **SWAP** to a normal label allocated by the egress. LDP: the label in the egress's Label Mapping. SR: the egress PE's SRGB base + the prefix-SID index. | A normal (arbitrary) label, 16 or higher | No-PHP (P) flag **set**, Explicit-Null (E) flag **clear** |
-| **UHP – Explicit Null** (No-PHP) | **SWAP** to **0** (IPv4 FEC/prefix) or **2** (IPv6 FEC/prefix) | Label **0** for an IPv4 FEC, label **2** for an IPv6 FEC | No-PHP (P) flag **set**, Explicit-Null (E) flag **set** |
-| **PHP – Implicit Null** | **POP**. The packet leaves with the next label down, or as bare IP if none remains. | Label **3** (Implicit NULL) | No-PHP (P) flag **clear** (E flag irrelevant) |
+What actions the last P router will take are determined by what flags/options the egress PE takes when signalling the LSP:
+
+| Last-hop behaviour | Last P router | LDP: egress advertises | SR IS-IS (RFC 8667) | SR OSPFv3 (RFC 8666) |
+|---|---|---|---|---|
+| **PHP / Implicit Null** | POP¹ | 3 (Implicit Null) | P=0² | NP=0² |
+| **UHP / Explicit Null** | SWAP → 0 (IPv4) / 2 (IPv6) | 0 (IPv4 FEC) / 2 (IPv6 FEC) | P=1, E=1 | NP=1, E=1 |
+| **UHP / non-null label** | SWAP → egress's label³ | Normal label (≥16) | P=1, E=0 | NP=1, E=0 |
+
+¹ The packet leaves with the next label down, or as bare IP if none remains.
+² The E flag is only meaningful with P/NP=1.
+³ LDP: the label from the egress PE's Label Mapping. SR: the egress PE's SRGB base + prefix-SID index.
 
 
-
-The most basic form ("implicit null") involves the last P router **popping** the last label off the packet, leaving just the raw IPv4 or IPv6 (or other) payload.  The advantage of transmitting the packet from last P to last PE router without an MPLS label means that egress PE device only sees an IP header, which it uses to forward the packet.  If a label is present between P and PE then the PE has to first examine the label, and then look at the IP header which is a more expensive operation.
-
-Another form of PHP is also defined, called "explicit null" (see [RFC 3032](https://www.rfc-editor.org/rfc/rfc3032.html#section-2)).  In this case the last P router performs a label **swap** operation, applying a well-known label to the packet which indicates the payload protocol.  Specifically the explicit null label can be:
-
-0 - Indicating the payload is an IPv4 packet
-
-2 - Indicating the payload is an IPv6 packet
-
-### MPLS Label Operations
+### MPLS Origins
 
 It is easy to forget today that MPLS was developed at a time when doing longest-prefix matching in hardware was considered by some to be an impossibility, and when telco's were still keen on technologies such as [ATM](https://en.wikipedia.org/wiki/Asynchronous_Transfer_Mode), which switched "cells" by doing exact-matches on fixed-length headers.  [RFC 3031](https://www.rfc-editor.org/info/rfc3031/#section-2.1) alludes to this stating _"MPLS forwarding can be done by switches which are capable of doing label lookup and replacement, but are either not capable of analyzing the network layer headers, or are not capable of analyzing the network layer headers at adequate speed."_
 
-TCAMs that could perform LPM in hardware had become available by the time MPLS began to be widely deployed, so it was other properties of MPLS that led to its adoption.  But it's worth remembering this background when considering how it works, and observing how the routers in our virtual labs behave.  Two more statements from RFC 3031 which will become relevant are:
+Hardware quickly made such concerns irrelevant, and by the time MPLS was being widely deployed we had TCAMs and routers that could do LPM matching in hardware.  Nonetheless the legacy of the initial approach is present in much of how MPLS operates.  The protocol implementation makes several choices which seem designed to minimise the number of packet headers that need to be checked, and forwarding tables that need to be consulted, as packets are forwarded through devices.
 
-_"In MPLS, the assignment of a particular packet to a particular FEC is done just once, as the packet enters the network."_
 
-_"In the MPLS forwarding paradigm, once a packet is assigned to a FEC, no further header analysis is done by subsequent routers; all forwarding is driven by the labels."_
+
 
 
 
@@ -391,6 +387,16 @@ Implicit or explicit null at the last P router are irrelevant here so I didn't t
 
 ## Standards
 
+
+Two more statements from RFC 3031 which will become relevant are:
+
+_"In MPLS, the assignment of a particular packet to a particular FEC is done just once, as the packet enters the network."_
+
+_"In the MPLS forwarding paradigm, once a packet is assigned to a FEC, no further header analysis is done by subsequent routers; all forwarding is driven by the labels."_
+
+RFC3032 - contradictory about having to inspect further into packet?
+
+
 So is it standards compliant?  No.
 
 Linux?  
@@ -401,13 +407,13 @@ Standards don't mention it - but they probably couldn't imagine it.  Time of wri
 
 ### 4PE
 
-4PE is conceptually the "opposite of 6PE ([RFC4798](https://www.rfc-editor.org/info/rfc4798/))".  An internet draft, [draft-mishra-idr-v4-islands-v6-core-4pe-10](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10)), titled "Connecting IPv4 Islands over IPv6 Core using IPv4 Provider Edge Routers (4PE)" has been worked on in recent years to address.
+4PE is the name used for the type of network described in this post.  The name clearly alludes to [6PE](https://www.rfc-editor.org/info/rfc4798/) used to transmit IPv6 over an IPv4-only MPLS core.  There is a draft standard, [draft-mishra-idr-v4-islands-v6-core-4pe-10](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10)), titled "Connecting IPv4 Islands over IPv6 Core using IPv4 Provider Edge Routers (4PE)" in an attempt to standardise the setup.
 
-It presents various potential ways to solve the problem.  The options in sectino 8.1, 8.2 and 8.3 all involve using [BGP labelled unicast](https://datatracker.ietf.org/doc/html/rfc8277) to send a label with each IPv4 BGP route announced between PEs, and to add this label at the ingress PE before adding the transport label for the destination PE loopback.  While that neatly solves the issue we would prefer to deal with it without having to put label information into BGP routes.
+It presents various potential ways to solve the problem.  The options in section 8.1, 8.2 and 8.3 mirror 6PE, using [BGP labelled unicast](https://datatracker.ietf.org/doc/html/rfc8277) to send a label with each IPv4 BGP route announced between PEs.  In each case the ingress PE applies two labels to the IPv4 packet, the first from the BGP route, the second from the MPLS LSP.  While that neatly solves the issue I am here more interested in if the problem can be addressed without putting labels in BGP.
 
-Section 8.4 of the 4PE draft describes a scenario that operates without BGP-LU.  PHP is not used on the penultimate P, so the packet arrives at the egress PE with the transport label intact.  The egress PE pops the transport label, then needs to inspect the remaining packet protocol version (IPv4 or IPv6) and then look up the destination IP in the appropriate routing table.  It cannot infer the address family or table for IP route lookup from the label.
+Section 8.4 of the 4PE draft describes a scenario that operates without BGP-LU.  PHP is not used on the penultimate P, so the packet arrives at the egress PE with the transport label intact.  The egress PE pops the transport label, then needs to inspect the remaining packet protocol version (IPv4 or IPv6), and then look up the destination IP in the appropriate routing table.  It cannot infer the address family or table for IP route lookup from the label.
 
-Section 8.5 of the 4PE draft describes a similar situation, but with IPv6 explicit-null (2) signalled by the egress PE for the v6 loopback label.  This scenario is similar to what we observed in the Juniper lab with explicit null enabled.  The packet uses the single-label transport across the core, then at the last P router the label is swapped for '2' and it is forwarded to the PE.  This packet is technically invalid, label=2, S(last label)=1, payload=IPv4.  Only IPv6 should be contained within such a packet.  Juniper PEs as we seen fail to process this packet arriving.  Arista we observed does not assume label=2 means IPv6, despite that being in the standards, and instead inspects the packet as it would for the 4PE mode in section 8.4.
+Section 8.5 of the 4PE draft describes a similar setup, but with IPv6 explicit-null (2) signalled by the egress PE for the v6 loopback label.  This scenario is similar to what we observed in the Juniper lab with explicit null enabled.  The packet uses the single-label transport across the core, then at the last P router the label is swapped for '2' and it is forwarded to the PE.  This packet is technically invalid, label=2, S(last label)=1, payload=IPv4.  Only IPv6 should be contained within such a packet.  Juniper PEs as we seen fail to process this packet arriving.  Arista we observed does not assume label=2 means IPv6, despite that being in the standards, and instead inspects the packet as it would for the 4PE mode in section 8.4.
 
 ### Alternative options?
 
