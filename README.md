@@ -49,9 +49,9 @@ What actions the last P router will take are determined by how the egress PE sig
 
 | Last-hop behaviour | P router label operation | LDP: label PE advertises | SR IS-IS: flags PE sets |
 |---|---|---|---|
-| **PHP / Implicit Null** | POP¹ | 3 (Implicit Null) | P=0² |
+| **PHP / Implicit Null** | POP¹ | 3 (Implicit Null) | P=0 |
 | **UHP / Explicit Null** | SWAP → 0 (IPv4) / 2 (IPv6) | 0 (IPv4 FEC) / 2 (IPv6 FEC) | P=1, E=1 |
-| **UHP / non-null label** | SWAP → egress's label³ | Normal label (≥16) | P=1, E=0 |
+| **UHP / non-null label** | SWAP → egress's label | Normal label (≥16) | P=1, E=0 |
 
 NOTE: The OSPFv3 flags for SR are similar, but "P" is called "NP".
 
