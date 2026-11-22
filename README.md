@@ -43,15 +43,16 @@ If the last P router does not remove the topmost label we call it "ultimate hop 
 
 What actions the last P router will take are determined by what flags/options the egress PE takes when signalling the LSP:
 
-| Last-hop behaviour | Last P router | LDP: egress advertises | SR IS-IS (RFC 8667) | SR OSPFv3 (RFC 8666) |
+| Last-hop behaviour | Last P router | LDP: egress advertises | SR IS-IS (RFC 8667) |
 |---|---|---|---|---|
-| **PHP / Implicit Null** | POP¹ | 3 (Implicit Null) | P=0² | NP=0² |
-| **UHP / Explicit Null** | SWAP → 0 (IPv4) / 2 (IPv6) | 0 (IPv4 FEC) / 2 (IPv6 FEC) | P=1, E=1 | NP=1, E=1 |
-| **UHP / non-null label** | SWAP → egress's label³ | Normal label (≥16) | P=1, E=0 | NP=1, E=0 |
+| **PHP / Implicit Null** | POP¹ | 3 (Implicit Null) | P=0² |
+| **UHP / Explicit Null** | SWAP → 0 (IPv4) / 2 (IPv6) | 0 (IPv4 FEC) / 2 (IPv6 FEC) | P=1, E=1 |
+| **UHP / non-null label** | SWAP → egress's label³ | Normal label (≥16) | P=1, E=0 |
 
-¹ The packet leaves with the next label down, or as bare IP if none remains.
-² The E flag is only meaningful with P/NP=1.
-³ LDP: the label from the egress PE's Label Mapping. SR: the egress PE's SRGB base + prefix-SID index.
+¹ The packet leaves with the next label down, or as bare IP if none remains.  
+² The E flag is only meaningful with P/NP=1.  
+³ LDP: the label from the egress PE's Label Mapping. SR: the egress PE's SRGB base + prefix-SID index.  
+NOTE: With SR + OSPFv3 the "NP" flag would be set equivalent to the "P" flag in SR + ISIS
 
 
 ### MPLS Origins
