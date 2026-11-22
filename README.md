@@ -54,6 +54,8 @@ _"In MPLS, the assignment of a particular packet to a particular FEC is done jus
 
 _"In the MPLS forwarding paradigm, once a packet is assigned to a FEC, no further header analysis is done by subsequent routers; all forwarding is driven by the labels."_
 
+
+
 ## Labs
 
 ### JunOS vjunos-router
@@ -381,3 +383,24 @@ So is it standards compliant?  No.
 Linux?  
 
 Standards don't mention it - but they probably couldn't imagine it.  Time of writing MPLS nobody expected todays scenario - that people would want to try to send IPv4 over an IPv6-only network.  The idea was we would migrate from IPv4 to IPv6 in a few years, and for those few years we would dual-stack everything.  It is only today, with no expiry date for IPv4 on the horizon, that people are trying to do wonky things like v4-over-v6.
+
+## Solutions
+
+### 4PE
+
+4PE is conceptually the "opposite of 6PE ([RFC4798](https://www.rfc-editor.org/info/rfc4798/))".  An internet draft, [draft-mishra-idr-v4-islands-v6-core-4pe-06](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-06), titled "Connecting IPv4 Islands over IPv6 Core using IPv4 Provider Edge Routers (4PE)" was published several years back.
+
+Conceptually 
+
+### VPNv4
+
+### Standardise Arista's approach
+
+The cleanest way 
+
+- Ingress PE pushes two labels like in 4PE/VPNv4
+- We don't exchange labels with MPLS though, the ingress PE always pushes 0 for an IPv4 packet or 2 for IPv6, with the S-bit set to 1.
+- The transport label is pushed on top of this by the ingress PE
+
+
+
