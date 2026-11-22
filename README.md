@@ -82,10 +82,10 @@ The linux image should have FRR installed.  The vanilla debian container image w
 
 The topology files, startup configs and results of testing can be found in the relevtant directories in this repo:
 
-[Juniper vJunos Router - SR](sr-mpls-v6-junos)
-[Cisco xRD Control Plane](sr-mpls-v6-xrd)
-[Arista cEOS](sr-mpls-v6-arista)
-[Juniper vJunos Router - LDP](ldp-mpls-v6-junos)
+[Juniper vJunos Router - SR](sr-mpls-v6-junos)  
+[Cisco xRD Control Plane](sr-mpls-v6-xrd)  
+[Arista cEOS](sr-mpls-v6-arista)  
+[Juniper vJunos Router - LDP](ldp-mpls-v6-junos)  
 
 ## Standards
 
