@@ -39,7 +39,7 @@ The IPv4 route PE1 learns from CE1 is announced to PE2 with a next-hop of the PE
 
 [Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) is part of the  MPLS standards and defines a method by which the last 'P' router can **pop** the outer label from a packet before it is sent to the egress PE.  The RFC explains this allows the egress PE *"to do a single lookup"*, because the packet doesn't arrive with an extra MPLS label for it to inspect.
 
-If the last P router does not remove the topmost label we call it "ultimate hop popping" (UHP).  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  There are two modes for UHP, in the first a regular MPLS label is signalled and used, in the other a well-known "explicit null" label of either 0 (if the payload is an IPv4 packet) or 2 (for IPv6) is used.
+If the last P router *does not* remove the outer label we call it "ultimate hop popping" (UHP).  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  There are two modes for UHP, in the first a regular MPLS label is signalled and used, in the other a well-known "explicit null" label of either 0 (if the payload is an IPv4 packet) or 2 (for IPv6) is used.
 
 What actions the last P router will take are determined by how the egress PE signals the LSP for its loopback IP:
 
