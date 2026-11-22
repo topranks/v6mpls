@@ -388,12 +388,12 @@ Standards don't mention it - but they probably couldn't imagine it.  Time of wri
 
 ### 4PE
 
-
-
-Conceptually 
-
-
 4PE is conceptually the "opposite of 6PE ([RFC4798](https://www.rfc-editor.org/info/rfc4798/))".  An internet draft, [draft-mishra-idr-v4-islands-v6-core-4pe-10](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10)), titled "Connecting IPv4 Islands over IPv6 Core using IPv4 Provider Edge Routers (4PE)" was published several years back.
+
+Section 4 of the draft standards acknowledges the problem with implicit null at last P.  It doesn't refer to Ethertype.  "With the Default implicit-null Penultimate Hop (PHP) mode, the egress LSR P node would POP the topmost label revealing the native IPv4 packet which would be subsequently dropped as the Core underlay is an IPv6-Only core."  <--- I think this gets it wrong though, it doesn't POP + new routing lookup, it's label lookup -> pop+encap rule.  The packet after popping may be IPv4, but many platforms don't look at it, instead the ingress label points to a and on an Ethernet link to set the correct destination MAC address and Ethertype.
+
+
+MAC known from ND.  Etype known from packet inspection.
 
 Conceptually 
 
