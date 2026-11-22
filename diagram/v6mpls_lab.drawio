@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
-  <diagram id="v6mpls" name="v6mpls lab">
-    <mxGraphModel dx="2020" dy="1134" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="800" math="0" shadow="0">
+  <diagram id="opt10" name="v6mpls_lab">
+    <mxGraphModel dx="1885" dy="1059" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="800" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -108,27 +108,49 @@
         <mxCell id="c30" parent="1" style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;rounded=0;verticalAlign=middle;align=center;fontSize=13;fontStyle=1;fontColor=#CC00CC;" value="IBGP lo0 ↔ lo0 &amp;nbsp;·&amp;nbsp; IPv6 + IPv4 SAFI&amp;nbsp; ·&amp;nbsp; IPv4 routes with IPv6 next-hop &amp;nbsp;·&amp;nbsp; next-hop-self" vertex="1">
           <mxGeometry height="26" width="600" x="660" y="185" as="geometry" />
         </mxCell>
-        <mxCell id="c31" edge="1" parent="1" source="c8" style="endArrow=classic;startArrow=classic;html=1;rounded=1;strokeWidth=3;dashed=1;strokeColor=#009900;endFill=1;startFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=1;" target="c9" value="">
+        <mxCell id="c31" edge="1" parent="1" source="c8" style="endArrow=classic;startArrow=classic;html=1;rounded=1;strokeWidth=3;dashed=1;strokeColor=#795548;endFill=1;startFill=1;exitX=0.7;exitY=1;entryX=0.3;entryY=1;" target="c9" value="">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="150" y="460" />
-              <mxPoint x="560" y="460" />
+              <mxPoint x="186" y="455" />
+              <mxPoint x="524" y="455" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="c32" edge="1" parent="1" source="c11" style="endArrow=classic;startArrow=classic;html=1;rounded=1;strokeWidth=3;dashed=1;strokeColor=#009900;endFill=1;startFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=1;" target="c12" value="">
+        <mxCell id="c31v6" edge="1" parent="1" source="c8" style="endArrow=classic;startArrow=classic;html=1;rounded=1;strokeWidth=3;dashed=1;strokeColor=#006064;endFill=1;startFill=1;exitX=0.3;exitY=1;entryX=0.7;entryY=1;" target="c9" value="">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="1360" y="460" />
-              <mxPoint x="1770" y="460" />
+              <mxPoint x="114" y="487" />
+              <mxPoint x="596" y="487" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="c33" parent="1" style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;rounded=0;verticalAlign=middle;align=center;fontSize=13;fontStyle=1;fontColor=#009900;" value="EBGP v4 + v6" vertex="1">
-          <mxGeometry height="24" width="220" x="226" y="433" as="geometry" />
+        <mxCell id="c32" edge="1" parent="1" source="c11" style="endArrow=classic;startArrow=classic;html=1;rounded=1;strokeWidth=3;dashed=1;strokeColor=#795548;endFill=1;startFill=1;exitX=0.7;exitY=1;entryX=0.3;entryY=1;" target="c12" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1396" y="455" />
+              <mxPoint x="1734" y="455" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="c34" parent="1" style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;rounded=0;verticalAlign=middle;align=center;fontSize=13;fontStyle=1;fontColor=#009900;" value="EBGP v4 + v6" vertex="1">
-          <mxGeometry height="24" width="220" x="1475" y="433" as="geometry" />
+        <mxCell id="c32v6" edge="1" parent="1" source="c11" style="endArrow=classic;startArrow=classic;html=1;rounded=1;strokeWidth=3;dashed=1;strokeColor=#006064;endFill=1;startFill=1;exitX=0.3;exitY=1;entryX=0.7;entryY=1;" target="c12" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1324" y="487" />
+              <mxPoint x="1806" y="487" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c33" parent="1" style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;rounded=0;verticalAlign=middle;align=center;fontSize=13;fontStyle=1;fontColor=#795548;" value="EBGP IPv4" vertex="1">
+          <mxGeometry height="24" width="220" x="226" y="429" as="geometry" />
+        </mxCell>
+        <mxCell id="c33v6" parent="1" style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;rounded=0;verticalAlign=middle;align=center;fontSize=13;fontStyle=1;fontColor=#006064;" value="EBGP IPv6" vertex="1">
+          <mxGeometry height="24" width="220" x="226" y="459" as="geometry" />
+        </mxCell>
+        <mxCell id="c34" parent="1" style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;rounded=0;verticalAlign=middle;align=center;fontSize=13;fontStyle=1;fontColor=#795548;" value="EBGP IPv4" vertex="1">
+          <mxGeometry height="24" width="220" x="1475" y="429" as="geometry" />
+        </mxCell>
+        <mxCell id="c34v6" parent="1" style="text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;rounded=0;verticalAlign=middle;align=center;fontSize=13;fontStyle=1;fontColor=#006064;" value="EBGP IPv6" vertex="1">
+          <mxGeometry height="24" width="220" x="1475" y="459" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
