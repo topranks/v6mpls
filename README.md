@@ -392,6 +392,13 @@ Standards don't mention it - but they probably couldn't imagine it.  Time of wri
 
 Conceptually 
 
+
+4PE is conceptually the "opposite of 6PE ([RFC4798](https://www.rfc-editor.org/info/rfc4798/))".  An internet draft, [draft-mishra-idr-v4-islands-v6-core-4pe-10](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10)), titled "Connecting IPv4 Islands over IPv6 Core using IPv4 Provider Edge Routers (4PE)" was published several years back.
+
+Conceptually 
+
+
+
 ### VPNv4
 
 ### Standardise Arista's approach
@@ -401,6 +408,5 @@ The cleanest way
 - Ingress PE pushes two labels like in 4PE/VPNv4
 - We don't exchange labels with MPLS though, the ingress PE always pushes 0 for an IPv4 packet or 2 for IPv6, with the S-bit set to 1.
 - The transport label is pushed on top of this by the ingress PE
-
 
 
