@@ -1,4 +1,6 @@
-# Mixed Messages: IPv4, IPv6 and the labels inbetween.
+# Mixed Messages: IPv4, IPv6 and the labels inbetween
+
+Can an MPLS network built on an IPv6-only core transit IPv4 packets?
 
 ## Background
 
