@@ -43,8 +43,8 @@ If the last P router does not remove the topmost label we call it "ultimate hop 
 
 What actions the last P router will take are determined by what flags/options the egress PE takes when signalling the LSP:
 
-| Last-hop behaviour | Last P router | LDP: egress advertises | SR IS-IS (RFC 8667) |
-|---|---|---|---|---|
+| Last-hop behaviour | P router label operation | LDP: egress advertises | SR IS-IS (RFC 8667) |
+|---|---|---|---|
 | **PHP / Implicit Null** | POP¹ | 3 (Implicit Null) | P=0² |
 | **UHP / Explicit Null** | SWAP → 0 (IPv4) / 2 (IPv6) | 0 (IPv4 FEC) / 2 (IPv6 FEC) | P=1, E=1 |
 | **UHP / non-null label** | SWAP → egress's label³ | Normal label (≥16) | P=1, E=0 |
