@@ -2,6 +2,8 @@
 
 Can an MPLS network built on an IPv6-only core transit IPv4 packets?
 
+This repo contains several [containerlab](https://containerlab.dev/) topologies to test that proposition.
+
 ## Background
 
 [Daryll Swer](https://www.swernetworks.com/author/daryll-swer/) nerd-sniped me on this one a few weeks back, drawing my attention to a "bug" in Juniper MX devices whereby IPv4 traffic could not be carried over an MPLS network with an IPv6-only core.  He further said the same setup works just fine with Arista devices.
@@ -10,8 +12,6 @@ The question piqued my interest for two reasons:
 
 1. Why exactly doesn't it work, and can it be made to work?
 3. What do the standards say about this kind of scenario?  What should we expect to happen?
-
-This repo has several [containerlab](https://containerlab.dev/) topologies with pre-built configurations to try to answer these questions.
 
 ## Scenario
 
