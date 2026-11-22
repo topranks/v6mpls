@@ -50,8 +50,9 @@ What actions the last P router will take are determined by what flags/options th
 | **UHP / non-null label** | SWAP → egress's label³ | Normal label (≥16) | P=1, E=0 |
 
 ¹ The packet leaves with the next label down, or as bare IP if none remains.  
-² The E flag is only meaningful with P/NP=1.  
-³ LDP: the label from the egress PE's Label Mapping. SR: the egress PE's SRGB base + prefix-SID index.  
+² The E flag is only meaningful with P=1.  P = "no php" flag, E = explicit null flag  
+³ LDP: the label from the egress PE's Label Mapping. SR: the egress PE's SRGB base + prefix-SID index.
+
 NOTE: With SR + OSPFv3 the "NP" flag would be set equivalent to the "P" flag in SR + ISIS
 
 
