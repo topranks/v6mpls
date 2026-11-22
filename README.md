@@ -393,6 +393,16 @@ Standards don't mention it - but they probably couldn't imagine it.  Time of wri
 Section 4 of the draft standards acknowledges the problem with implicit null at last P.  It doesn't refer to Ethertype.  "With the Default implicit-null Penultimate Hop (PHP) mode, the egress LSR P node would POP the topmost label revealing the native IPv4 packet which would be subsequently dropped as the Core underlay is an IPv6-Only core."  <--- I think this gets it wrong though, it doesn't POP + new routing lookup, it's label lookup -> pop+encap rule.  The packet after popping may be IPv4, but many platforms don't look at it, instead the ingress label points to a and on an Ethernet link to set the correct destination MAC address and Ethertype.
 
 
+"8.4. Arbitrary topmost with customer prefixes unlabeled" - a random label for the IPv6 loopback is assigned, egress PE advertises it to neighbors, and says it does not want PHP??
+
+"8.5 - Explicit Null topmost with customer prefixes unlabeled" - this is the mode we see the Juniper doing but failing to process.  it means forward it all the way, do explicit null swap on last PE of 16003 -> 2, and then have the egress PE pop the '2', but look at the payload and route dynamically.
+
+
+
+
+
+
+
 MAC known from ND.  Etype known from packet inspection.
 
 Conceptually 
