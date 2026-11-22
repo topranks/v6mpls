@@ -19,7 +19,7 @@ The exact scenario we want to look at is where we have an MPLS network, composed
 
 If we connect external IPv4 networks to the PEs, can we use the MPLS LSPs built across the IPv6 core to transport them across the network?  The scenario is the same as that described in the [4PE](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10) RFC draft.
 
-In the containerlab topologies we use the most basic network of this kind that we can, with only three core routers, PE1, P and PE2.
+In the containerlab topologies we use the most basic network of this kind that we can, with only three core routers, PE1, P and PE2, and two CEs, one connected to each PE.
 
 Configuration wise we enable an IGP on link and loopback interfaces, in this lab IS-IS.  We also enable MPLS, and for most of the tests use [SR-MPLS](https://www.rfc-editor.org/info/rfc8660/) with signalling carried in IS-IS itself, but also for completeness test with [LDP](https://www.ietf.org/proceedings/85/rfc/rfc5036.txt) in one lab.
 
@@ -37,7 +37,17 @@ As a result of this any IPv4 route that CE1 announces to PE1 gets propagated to 
 
 ### Penultimate Hop Popping
 
-[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) is in the original MPLS standards and defines the label operations the last 'P' router in an LSP performs.
+[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) is in the original MPLS standards and defines a method by which the last 'P' router can **pop** the topmost label from the stack.  As the RFC states this allows the next router - the egress PE - "to do a single lookup" as the packet arrives without the label corresponding to its own loopback IP.
+
+PEs in the MPLS network signal 
+
+| Last-hop behaviour | Operation on the last P router | Egress PE LDP (Loopback FEC)| Egress PE SR-MPLS (Loopback Prefix-SID)|
+|---|---|---|---|
+| **UHP – non-null label** (No-PHP) | **SWAP** to a normal label allocated by the egress. LDP: the label in the egress's Label Mapping. SR: the egress PE's SRGB base + the prefix-SID index. | A normal (arbitrary) label, 16 or higher | No-PHP (P) flag **set**, Explicit-Null (E) flag **clear** |
+| **UHP – Explicit Null** (No-PHP) | **SWAP** to **0** (IPv4 FEC/prefix) or **2** (IPv6 FEC/prefix) | Label **0** for an IPv4 FEC, label **2** for an IPv6 FEC | No-PHP (P) flag **set**, Explicit-Null (E) flag **set** |
+| **PHP – Implicit Null** | **POP**. The packet leaves with the next label down, or as bare IP if none remains. | Label **3** (Implicit NULL) | No-PHP (P) flag **clear** (E flag irrelevant) |
+
+
 
 The most basic form ("implicit null") involves the last P router **popping** the last label off the packet, leaving just the raw IPv4 or IPv6 (or other) payload.  The advantage of transmitting the packet from last P to last PE router without an MPLS label means that egress PE device only sees an IP header, which it uses to forward the packet.  If a label is present between P and PE then the PE has to first examine the label, and then look at the IP header which is a more expensive operation.
 
