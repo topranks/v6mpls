@@ -1,8 +1,8 @@
-# Mixed Messages: IPv4, IPv6 and the labels inbetween
+4PE: IPv4, IPv6 and the labels inbetween
 
-Can an MPLS network built on an IPv6-only core transit IPv4 packets?
+Can an MPLS network built on an IPv6-only core transit IPv4 packets?  There is an internet draft standard - [draft-mishra-idr-v4-islands-v6-core--10](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10)) - aimed at standardising various mechanisms to do just that, but it was not adopted and its future is unclear.
 
-This repo contains several [containerlab](https://containerlab.dev/) topologies to test that proposition.
+This repo contains several [containerlab](https://containerlab.dev/) topologies to see what is supported across several vendor platforms.
 
 ## Background
 
@@ -113,7 +113,7 @@ Standards don't mention it - but they probably couldn't imagine it.  Time of wri
 
 ### 4PE
 
-4PE is the name used for the type of network described in this post.  The name clearly alludes to [6PE](https://www.rfc-editor.org/info/rfc4798/) used to transmit IPv6 over an IPv4-only MPLS core.  There is a draft standard, [draft-mishra-idr-v4-islands-v6-core-4pe-10](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10)), titled "Connecting IPv4 Islands over IPv6 Core using IPv4 Provider Edge Routers (4PE)" in an attempt to standardise the setup.
+ is the name used for the type of network described in this post.  The name clearly alludes to [6PE](https://www.rfc-editor.org/info/rfc4798/) used to transmit IPv6 over an IPv4-only MPLS core.  There is a draft standard, [draft-mishra-idr-v4-islands-v6-core--10](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10)), titled "Connecting IPv4 Islands over IPv6 Core using IPv4 Provider Edge Routers (4PE)" in an attempt to standardise the setup.
 
 It presents various potential ways to solve the problem.  The options in section 8.1, 8.2 and 8.3 mirror 6PE, using [BGP labelled unicast](https://datatracker.ietf.org/doc/html/rfc8277) to send a label with each IPv4 BGP route announced between PEs.  In each case the ingress PE applies two labels to the IPv4 packet, the first from the BGP route, the second from the MPLS LSP.  While that neatly solves the issue I am here more interested in if the problem can be addressed without putting labels in BGP.
 
