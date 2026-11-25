@@ -1,8 +1,8 @@
 # 4PE: IPv4, IPv6 and the labels inbetween
 
-Can an MPLS network built on an IPv6-only core transit IPv4 packets?  Despite there being an [internet draft](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10) - that tried to tackle the problem it wasn't adopted and the real world situation seems unclear.
+Can an MPLS network built on an IPv6-only core transit IPv4 packets?  An expired [internet draft](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10) described several ways it could be done, but it was not adopted and what is supported by vendors is unclear.
 
-This repo contains several [containerlab](https://containerlab.dev/) topologies to see what is supported across several vendor platforms.
+This repo contains several [containerlab](https://containerlab.dev/) topologies to test what works and doesn't across Juniper, Arista and Cisco IOS-XR.
 
 ## Background
 
