@@ -59,7 +59,7 @@ If the last P router *does not* remove the outer label we call it "ultimate hop 
 
 So that leaves us with three possible ways the last P router can behave for an LSP.  Which it uses is based on how the PE device signals the LSP in the first place, with both LDP and SR supporting all three modes.
 
-|No| Penultimate Action | P router label operation | PE LSP Signalling: LDP | PE LSP Signalling: SR IS-IS |
+|No| Penultimate Action | P router label operation | PE LSP Signalling: LDP Label | PE LSP Signalling: SR IS-IS Flags |
 |--|---|---|---|---|
 |1| **PHP / Implicit Null** | POP¹ | 3 (Implicit Null) | P=0 |
 |2| **UHP / Explicit Null** | SWAP → 0 (IPv4) / 2 (IPv6) | 0 (IPv4 FEC) / 2 (IPv6 FEC) | P=1, E=1 |
