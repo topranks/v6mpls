@@ -11,7 +11,7 @@ This repo contains several [containerlab](https://containerlab.dev/) topologies 
 The question piqued my interest for two reasons:
 
 1. Why exactly doesn't it work, and can it be made to work?
-3. What do the standards say about this kind of scenario?  Is it expected to work?
+3. What do the standards say about this setup?  Is it expected to work?
 
 ## Scenario
 
