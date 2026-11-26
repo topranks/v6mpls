@@ -61,11 +61,11 @@ So that leaves us with three possible ways the last P router can behave for an L
 
 |No| Penultimate Action | P router label operation | PE LSP Signalling: LDP Label | PE LSP Signalling: SR IS-IS Flags |
 |--|---|---|---|---|
-|1| **PHP / Implicit Null** | POP¹ | 3 (Implicit Null) | P=0 |
+|1| **PHP / Implicit Null** | POP | 3 (Implicit Null) | P=0 |
 |2| **UHP / Explicit Null** | SWAP → 0 (IPv4) / 2 (IPv6) | 0 (IPv4 FEC) / 2 (IPv6 FEC) | P=1, E=1 |
-|3| **UHP / non-null label** | SWAP → egress's label | Normal label (≥16) | P=1, E=0 |
+|3| **UHP / non-null label** | SWAP → nomral label | Normal label (≥16) | P=1, E=0 |
 
-NOTE: I've called this the "Penultimate Action" for the sake of this post, and given each a number, as we will need to refer to them a lot.
+NOTE: I've called this the "Penultimate Action" for the sake of this post, and given each a number, as we will need to refer to them a lot.  
 NOTE 2: The OSPFv3 flags for SR are similar, but "P" is called "NP".
 
 ### BGP-LU, VPNv4, Label Stacks and Overlays
