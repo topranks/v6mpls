@@ -54,8 +54,8 @@ This is not, in fact, a cheesy 80s hip hop compilation.
 If the last P router *does not* remove the outer label we call it "ultimate hop popping" (UHP).  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  There are two modes for UHP:
 
 * *Explicit-null* means the last P router swaps the incoming label with a well-known generic one
-** 0 is used if the LSP is built for an IPv4 prefix
-** 2 is used if the LSP is built for an IPv6 prefix
+  * 0 is used if the LSP is built for an IPv4 prefix
+  * 2 is used if the LSP is built for an IPv6 prefix
 
 So that leaves us with three possible ways the last P router can behave for an LSP.  Which it uses is based on how the PE device signals the LSP in the first place, with both LDP and SR supporting all three modes.
 
