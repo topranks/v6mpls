@@ -51,7 +51,7 @@ This is not, in fact, a cheesy 80s hip hop compilation.
 
 [Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) defines a method by which the last 'P' router can **pop** the outer label from a packet before it is sent to the egress PE.  The RFC explains that this allows the egress PE *"to do a single lookup"*, because the packet doesn't arrive with an extra MPLS label for it to inspect.  The rationale for this optimisation is probably best considered in light of the previous section.
 
-If the last P router *does not* remove the outer label we call it "ultimate hop popping" (UHP).  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  There are two modes for UHP:
+If the last P router *does not* remove the outer label we call it **ultimate hop popping" (UHP)**.  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  There are two modes for UHP:
 
 * *Explicit-null* means the last P router swaps the incoming label with a well-known generic one
   * 0 is used if the LSP is built for an IPv4 prefix
