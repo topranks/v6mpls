@@ -1,77 +1,86 @@
 # 4PE: IPv4, IPv6 and the labels inbetween
 
-Can an MPLS network built on an IPv6-only core transit IPv4 packets?  An expired [internet draft](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10) describes several ways to do this with existing protocol options, and indeed there may be more.  But it was never adopted and what vendors support is unclear.
+Can an MPLS network built on an IPv6-only core transit IPv4 packets?  An expired [internet draft](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10) describes several ways to do this with existing protocols, and indeed there may be more.  But it was never adopted and what vendors support is unclear.
 
-This repo contains several [containerlab](https://containerlab.dev/) topologies to test what works and doesn't across Juniper, Arista and Cisco IOS-XR.
+This repo contains several [containerlab](https://containerlab.dev/) topologies to test what does and doesn't work across Juniper, Arista and Cisco IOS-XR.
 
-## Background
+## Introduction
 
 [Daryll Swer](https://www.swernetworks.com/author/daryll-swer/) nerd-sniped me on this one a few weeks back, drawing my attention to what he described as a "bug" in Juniper MX devices whereby IPv4 traffic could not be carried over an MPLS network with an IPv6-only core.  He explained the same setup works just fine with Arista devices.
 
 The question piqued my interest for two reasons:
 
 1. Why exactly doesn't it work, and can it be made to work?
-3. What do the standards say about this setup?  Is it expected to work?
+2. What do the standards say about this setup?  Is it expected to work?
 
 ## Lab Topology
 
 We have an MPLS network, composed of PE and P routers, which only have IPv6 addressing on their links, and only an IPv6 loopback address.
 
-If we connect external IPv4 networks to the PEs, can we use the MPLS LSPs built across the IPv6 core to transport them across the network?  The scenario is the same as that described in the [4PE](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10) draft.
-
-### Nodes
-
 In the containerlab topologies we use the most basic network of this kind possible, with three core routers, PE1, P and PE2, and two CEs, one connected to each PE.
 
 ### Protocols
 
-In the lab we use ISIS as the IGP protocol, configuring it on link and loopback interfaces.  We also enable MPLS, and for most of the tests use [SR-MPLS](https://www.rfc-editor.org/info/rfc8660/) with signalling carried in [IS-IS](https://www.rfc-editor.org/info/rfc8667/) itself, but also for completeness test with [LDP](https://www.ietf.org/proceedings/85/rfc/rfc5036.txt).
+In the lab we use ISIS as the IGP protocol, configuring it on link and loopback interfaces.  We also enable MPLS, and for most of the tests use [SR-MPLS](https://www.rfc-editor.org/info/rfc8660/) with signalling carried in [IS-IS](https://www.rfc-editor.org/info/rfc8667/) itself.  For completeness I also tested [LDP](https://www.ietf.org/proceedings/85/rfc/rfc5036.txt) with JunOS, to validate the signalling protocol was irrelevant. 
 
-Every PE learns a route for the IPv6 loopback of every other PE through IS-IS, and an MPLS LSP is built to use for traffic to that IP.
+Each PE learn a route for the IPv6 loopback of the other PE from ISIS, and an MPLS LSP is built to use for traffic to that IP.
 
-We enable IBGP between the PE IPv6 loopback addresses.  We enable both IPv6 and IPv4 address families on the IBGP sessions, and configure the PEs to use the methods described in [RFC 8950](https://www.rfc-editor.org/info/rfc8950/) to advertise IPv4 addresses with a next-hop of their IPv6 loopback.
+IBGP is enabled between these PE IPv6 loopbacks.  We enable both IPv6 and IPv4 address families on the IBGP sessions, and configure the PEs to use the methods described in [RFC 8950](https://www.rfc-editor.org/info/rfc8950/) to advertise IPv4 addresses with a next-hop of their IPv6 loopback.
 
-The CE devices have two EBGP sessions to the PEs.  One over the IPv6 addressing on the link from PE to CE, which is used to announce IPv6 addresses, and another over the IPv4 addresses on the same link, used for IPv4 addresses.  The IPv4 addresses on the PE side of these links are the only IPv4 addresses on the core network.
+The CE devices have two EBGP sessions to the PEs.  One over the IPv6 addressing on the link from PE to CE, with the IPv6 address fam enabled, and another over the IPv4 addresses on the link, with the IPv4 address fam.  The IPv4 addresses on the PE side of these links are the only IPv4 addresses on the core network.
 
 [![v6mpls lab topology](diagram/v6mpls_lab.png)](diagram/v6mpls_lab.pdf?raw=true)
 
 The IPv4 route PE1 learns from CE1 is announced to PE2 with a next-hop of the PE1 IPv6 loopback address.  The question we want to answer is what will PE2 on receipt of this route?  Given that the next-hop is an IPv6 address - _reachable via an MPLS path_ - will the route be installed?  And how will the data-plane encapsulation work on the wire for traffic to this destination?
 
-## Protocol Notes
+## Some Background
 
 ### MPLS Origins
 
-It is easy to forget today that MPLS was in development before longest-prefix matches in hardware were possible.  Back when telco's were still keen on technologies such as [ATM](https://en.wikipedia.org/wiki/Asynchronous_Transfer_Mode), switching "cells" based on exact-matches of fixed-length IDs.  MPLS initially aimed to bridge this gap and provide a way for high-speed forwarding of IP packets using similar hardware.  [RFC 3031](https://www.rfc-editor.org/info/rfc3031/#section-2.1) alludes to this stating _"MPLS forwarding can be done by switches which are capable of doing label lookup and replacement, but are either not capable of analyzing the network layer headers, or are not capable of analyzing the network layer headers at adequate speed."_
+It is easy to forget today that MPLS was in development before longest-prefix matches in hardware were possible.  Back when telco's were pushing technologies such as [ATM](https://en.wikipedia.org/wiki/Asynchronous_Transfer_Mode), which switched "cells" based on exact-matches of fixed-length IDs.  MPLS initially aimed to bridge this gap and provide a way for high-speed forwarding of IP packets using similar hardware.  [RFC 3031](https://www.rfc-editor.org/info/rfc3031/#section-2.1) alludes to this stating _"MPLS forwarding can be done by switches which are capable of doing label lookup and replacement, but are either not capable of analyzing the network layer headers, or are not capable of analyzing the network layer headers at adequate speed."_
 
-By the time MPLS was being widely deployed hardware had begun to catch up, and high-speed IP forwarding ASICs were becoming available.  Nonetheless I believe this legacy is worth bearing in mind when examining how MPLS operates.  Many design choices seek to minimise the number of packet header inspections needed, or forwarding table lookups required.
+By the time MPLS was being widely deployed hardware had begun to catch up, and high-speed IP forwarding ASICs were becoming available.  Nonetheless this history is worth bearing in mind when examining how MPLS operates.  Many design choices seek to minimise the number of packet header inspections needed, or forwarding table lookups required.
 
 ### Ultimate Hops and Pops
 
 This is not, in fact, a cheesy 80s hip hop compilation.
 
-[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) defines a method by which the last 'P' router can **pop** the outer label from a packet before it is sent to the egress PE.  The RFC explains that this allows the egress PE *"to do a single lookup"*, because the packet doesn't arrive with an extra MPLS label for it to inspect.  The rationale for this optimisation is probably best considered in light of the previous section.
+[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) defines a method by which the last 'P' router can **pop** the outer label from a packet before it is sent to the egress PE.  The RFC explains that this allows the egress PE *"to do a single lookup"* on the payload within the popped label, rather than having to first look at it and then examine what lies beneath.  The rationale for this optimisation is probably best considered in light of the previous section.
 
-If the last P router *does not* remove the outer label we call it **ultimate hop popping" (UHP)**.  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  There are two modes for UHP:
+If the last P router *does not* remove the outer label we call it **ultimate hop popping" (UHP)**.  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  The standards give us two options for the label swapped by the last P router in this case:
 
 * *Explicit-null* means the last P router swaps the incoming label with a well-known generic one
   * 0 is used if the LSP is built for an IPv4 prefix
   * 2 is used if the LSP is built for an IPv6 prefix
 * *Non-null* means the last P router swaps the incoming label with one dynamically chosen by the PE
 
-So that leaves us with three possible ways the last P router can behave for an LSP.  Which it uses is based on how the PE device signals the LSP in the first place, with both LDP and SR supporting all three modes.
+Putting it all together that leaves us with three separate ways the last P router can behave.  Which one gets used is controlled by the PE when signalling the LSP, either by sending the label with LDP or setting specific IGP flags with SR:
 
-|No| Penultimate Action | P router label operation | PE LSP Signalling: LDP Label | PE LSP Signalling: SR IS-IS Flags |
+|No| LSP Mode | P router label operation | PE LSP Signalling: LDP Label | PE LSP Signalling: SR IS-IS Flags |
 |--|---|---|---|---|
 |1| **PHP / Implicit Null** | POP | 3 (Implicit Null) | P=0 |
 |2| **UHP / Explicit Null** | SWAP → 0 (IPv4) / 2 (IPv6) | 0 (IPv4 FEC) / 2 (IPv6 FEC) | P=1, E=1 |
 |3| **UHP / Non-Null** | SWAP → nomral label | Normal label | P=1, E=0 |
 
-NOTE: I've called this the "Penultimate Action" for the sake of this post, and given each a number, as we will need to refer to them a lot.  
+NOTE: I called this the "LSP Mode" as the phrasing for what to call it is muddled, and I don't like saying "penultimate" over and over.  
 NOTE 2: The OSPFv3 flags for SR are similar, but "P" is called "NP".
 
 ### BGP-LU, VPNv4, Label Stacks and Overlays
 
-To add to the fun there are also several BGP address families which include a label field in routes they announce.  When a PE receives a route with one of these labels it programs its forwarding plane to add two labels to the packet that has arrived from the CE.  It first adds the label from the BGP route, and then adds the label for the LSP it has built to the next-hop IP in the route.
+To add to the fun there are also several BGP address families which include a label attribute when announcing routes.  When these address families are used the ingress PE will add the label from BGP as an "inner" or "service" label.  The label matching the LSP that gets us to the BGP next-hop (remote PE loopback) is then added as usual, and the inner label is tunnelled all the way to the egress PE.
+
+There are various BGP variants that do this, including VPNv6 and EVPN, but I'll note two here specifically:
+
+**VPNv4**: This is used for MPLS-based L3VPNs, where PEs allocate a label-per-VRF.  Service labels are used to identify what VRF incoming packets belong to, but in this post I want to focus on the global routing table so I didn't look into it in depth.
+**BGP-LU**: This does something similar, however it is used for routes 
+
+
+It then finds the label associated with the BGP next-hop IP, (or more in SR if traffic engineering is used).
+
+
+
+
+in routes they announce.  When a PE receives a route with one of these labels it programs its forwarding plane to add two labels to the packet that has arrived from the CE.  It first adds the label from the BGP route, and then adds the label for the LSP it has built to the next-hop IP in the route.
 
 This gives us a "stack" of labels, with the "inner" or "bottom" label being the one from the BGP route, and the "outer" or "topmost" label being the one for the LSP.  Indeed in segment routing there may be more labels added to this stack for traffic engineering, but that is out-of-scope here.
 
