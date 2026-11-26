@@ -6,12 +6,12 @@ This repo contains several [containerlab](https://containerlab.dev/) topologies 
 
 ## Background
 
-[Daryll Swer](https://www.swernetworks.com/author/daryll-swer/) nerd-sniped me on this one a few weeks back, drawing my attention to a "bug" in Juniper MX devices whereby IPv4 traffic could not be carried over an MPLS network with an IPv6-only core.  He further said the same setup works just fine with Arista devices.
+[Daryll Swer](https://www.swernetworks.com/author/daryll-swer/) nerd-sniped me on this one a few weeks back, drawing my attention to what he described as a "bug" in Juniper MX devices whereby IPv4 traffic could not be carried over an MPLS network with an IPv6-only core.  He explained the same setup works just fine with Arista devices.
 
 The question piqued my interest for two reasons:
 
 1. Why exactly doesn't it work, and can it be made to work?
-3. What do the standards say about this kind of scenario?  What should we expect to happen?
+3. What do the standards say about this kind of scenario?  Is it expected to work?
 
 ## Scenario
 
