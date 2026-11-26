@@ -68,6 +68,17 @@ So that leaves us with three possible ways the last P router can behave for an L
 NOTE: I've called this the "Penultimate Action" for the sake of this post, and given each a number, as we will need to refer to them a lot.
 NOTE 2: The OSPFv3 flags for SR are similar, but "P" is called "NP".
 
+### BGP-LU, VPNv4, Label Stacks and Overlays
+
+To add to the fun there are also several BGP address families which include a label field in routes they announce.  When a PE receives a route with one of these labels it programs its forwarding plane to add two labels to the packet that has arrived from the CE.  It first adds the label from the BGP route, and then adds the label for the LSP it has built to the next-hop IP in the route.
+
+This gives us a "stack" of labels, with the "inner" or "bottom" label being the one from the BGP route, and the "outer" or "topmost" label being the one for the LSP.  Indeed in segment routing there may be more labels added to this stack for traffic engineering, but that is out-of-scope here.
+
+The bottom label is sometimes called a "service" label.  It stays on the packet and is basically ignored across the core network, P routers make forwarding decisions and swap labels based on the topmost label just as they would if there was no service label at all.  Where it does get looked at is on the egress PE, where it can indicate one of the following:
+
+* A specific next-hop for the traffic to use
+* A specific local routing table, in which case the PE will look at the IP packet itself after removing the service label, and forward to the destination IP 
+
 ## Labs
 
 Currently there are four example lab topologies that can be run simply in containerlab.
