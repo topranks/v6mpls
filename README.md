@@ -13,7 +13,7 @@ The question piqued my interest for two reasons:
 1. Why exactly doesn't it work, and can it be made to work?
 3. What do the standards say about this setup?  Is it expected to work?
 
-## Scenario
+## Lab Topology
 
 We have an MPLS network, composed of PE and P routers, which only have IPv6 addressing on their links, and only an IPv6 loopback address.
 
@@ -85,16 +85,16 @@ The labs have containerlab 'kinds' that expect to find the following image names
 
 The linux image should have FRR installed.  The vanilla debian container image with _apt install frr_ should be sufficient.
 
-### Lab topologies, configs and detailed test results.
+### Containerlab topologies, configs and test results.
 
-The topology files, startup configs and results of testing can be found in the relevtant directories in this repo:
+The topology files, startup configs and results of testing can be found in the relevant directories in this repo:
 
 [Juniper vJunos Router - SR](sr-mpls-v6-junos)  
 [Cisco xRD Control Plane](sr-mpls-v6-xrd)  
 [Arista cEOS](sr-mpls-v6-arista)  
 [Juniper vJunos Router - LDP](ldp-mpls-v6-junos)  
 
-## Findings
+## Result Summary
 
 More detailed information on how each lab performed is available in the above 
 
