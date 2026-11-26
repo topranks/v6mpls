@@ -56,6 +56,7 @@ If the last P router *does not* remove the outer label we call it "ultimate hop 
 * *Explicit-null* means the last P router swaps the incoming label with a well-known generic one
   * 0 is used if the LSP is built for an IPv4 prefix
   * 2 is used if the LSP is built for an IPv6 prefix
+* Non-null ('normal' or 'arbitrary' label) means the last P router swaps the incoming label with one dynamically allocated by the PE for the LSP
 
 So that leaves us with three possible ways the last P router can behave for an LSP.  Which it uses is based on how the PE device signals the LSP in the first place, with both LDP and SR supporting all three modes.
 
