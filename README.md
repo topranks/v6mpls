@@ -39,27 +39,34 @@ The IPv4 route PE1 learns from CE1 is announced to PE2 with a next-hop of the PE
 
 ## Protocol Notes
 
-### Penultimate Hop Popping (PHP)
-
-[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) is part of the  MPLS standards and defines a method by which the last 'P' router can **pop** the outer label from a packet before it is sent to the egress PE.  The RFC explains that this allows the egress PE *"to do a single lookup"*, because the packet doesn't arrive with an extra MPLS label for it to inspect.
-
-If the last P router *does not* remove the outer label we call it "ultimate hop popping" (UHP).  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  There are two modes for UHP, in the first a regular MPLS label is signalled and used, in the other a well-known "explicit null" label of either 0 (if the payload is an IPv4 packet) or 2 (for IPv6) is used.
-
-What actions the last P router will take are determined by how the egress PE signals the LSP for its loopback IP:
-
-| Last-hop behaviour | P router label operation | LDP: label PE advertises | SR IS-IS: flags PE sets |
-|---|---|---|---|
-| **PHP / Implicit Null** | POP¹ | 3 (Implicit Null) | P=0 |
-| **UHP / Explicit Null** | SWAP → 0 (IPv4) / 2 (IPv6) | 0 (IPv4 FEC) / 2 (IPv6 FEC) | P=1, E=1 |
-| **UHP / non-null label** | SWAP → egress's label | Normal label (≥16) | P=1, E=0 |
-
-NOTE: The OSPFv3 flags for SR are similar, but "P" is called "NP".
-
 ### MPLS Origins
 
 It is easy to forget today that MPLS was developed before doing longest-prefix matches in hardware was possible, when telco's were still keen on technologies such as [ATM](https://en.wikipedia.org/wiki/Asynchronous_Transfer_Mode), with "cells" switched based on exact-matches and fixed-length IDs.  MPLS initially aimed to bridge this gap and provide a way for high-speed forwarding of IP packets using similar hardware.  [RFC 3031](https://www.rfc-editor.org/info/rfc3031/#section-2.1) alludes to this stating _"MPLS forwarding can be done by switches which are capable of doing label lookup and replacement, but are either not capable of analyzing the network layer headers, or are not capable of analyzing the network layer headers at adequate speed."_
 
 By the time MPLS was being widely deployed hardware had begun to catch up, and high-speed IP routing ASICs were becoming available.  Nonetheless I believe this legacy is worth bearing in mind when examining how MPLS operates.  Many design choices seek to minimise the number of packet header inspections needed, or forwarding table lookups required.
+
+### Ultimate Hops and Pops
+
+This is not, in fact, a cheesy 80s hip hop compilation.
+
+[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) defines a method by which the last 'P' router can **pop** the outer label from a packet before it is sent to the egress PE.  The RFC explains that this allows the egress PE *"to do a single lookup"*, because the packet doesn't arrive with an extra MPLS label for it to inspect.  The rationale for this optimisation is probably best considered in light of the previous section.
+
+If the last P router *does not* remove the outer label we call it "ultimate hop popping" (UHP).  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  There are two modes for UHP:
+
+* *Explicit-null* means the last P router swaps the incoming label with a well-known generic one
+** 0 is used if the LSP is built for an IPv4 prefix
+** 2 is used if the LSP is built for an IPv6 prefix
+
+So that leaves us with three possible ways the last P router can behave for an LSP.  Which it uses is based on how the PE device signals the LSP in the first place, with both LDP and SR supporting all three modes.
+
+|No| Penultimate Action | P router label operation | PE LSP Signalling: LDP | PE LSP Signalling: SR IS-IS |
+|--|---|---|---|---|
+|1| **PHP / Implicit Null** | POP¹ | 3 (Implicit Null) | P=0 |
+|2| **UHP / Explicit Null** | SWAP → 0 (IPv4) / 2 (IPv6) | 0 (IPv4 FEC) / 2 (IPv6 FEC) | P=1, E=1 |
+|3| **UHP / non-null label** | SWAP → egress's label | Normal label (≥16) | P=1, E=0 |
+
+NOTE: I've called this the "Penultimate Action" for the sake of this post, and given each a number, as we will need to refer to them a lot.
+NOTE 2: The OSPFv3 flags for SR are similar, but "P" is called "NP".
 
 ## Labs
 
