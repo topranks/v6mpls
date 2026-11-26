@@ -45,16 +45,16 @@ By the time MPLS was being widely deployed hardware had begun to catch up, and h
 
 This is not, in fact, a cheesy 80s hip hop compilation.
 
-[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) defines a method by which the last 'P' router can **pop** the outer label from a packet before it is sent to the egress PE.  The RFC explains that this allows the egress PE *"to do a single lookup"* on the payload within the popped label, rather than having to first look at it and then examine what lies beneath.  The rationale for this optimisation is probably best considered in light of the previous section.
+[Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) (PHP) defines a method by which the last 'P' router can **pop** the outer label from a packet before it is sent to the egress PE.  This is also known as *implicit null*.  The RFC explains that it allows the egress PE *"to do a single lookup"* on the resulting packet, rather than having to first look at the popped label and then examine what's inside.  The rationale for this optimisation is probably best considered in light of the previous section.
 
-If the last P router *does not* remove the outer label we call it **ultimate hop popping" (UHP)**.  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  The standards give us two options for the label swapped by the last P router in this case:
+If the last P router *does not* remove the outer label we call it **ultimate hop popping" (UHP)**.  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  The standards give us two variants of this option:
 
 * *Explicit-null* means the last P router swaps the incoming label with a well-known generic one
   * 0 is used if the LSP is built for an IPv4 prefix
   * 2 is used if the LSP is built for an IPv6 prefix
 * *Non-null* means the last P router swaps the incoming label with one dynamically chosen by the PE
 
-Putting it all together that leaves us with three separate ways the last P router can behave.  Which one gets used is controlled by the PE when signalling the LSP, either by sending the label with LDP or setting specific IGP flags with SR:
+Putting it all together leaves us with three separate ways the last P router can behave.  Which one gets used is controlled by the PE when signalling the LSP:
 
 |No| LSP Mode | P router label operation | PE LSP Signalling: LDP Label | PE LSP Signalling: SR IS-IS Flags |
 |--|---|---|---|---|
