@@ -17,7 +17,7 @@ The question piqued my interest for two reasons:
 
 We have an MPLS network, composed of PE and P routers, which only have IPv6 addressing on their links, and only an IPv6 loopback address.
 
-If we connect external IPv4 networks to the PEs, can we use the MPLS LSPs built across the IPv6 core to transport them across the network?  The scenario is the same as that described in the [4PE](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10) RFC draft.
+If we connect external IPv4 networks to the PEs, can we use the MPLS LSPs built across the IPv6 core to transport them across the network?  The scenario is the same as that described in the [4PE](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10) draft.
 
 ### Nodes
 
