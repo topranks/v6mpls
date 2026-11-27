@@ -86,11 +86,11 @@ The 4PE draft tries to codify how IPv4 packets can be sent over a core MPLS netw
 |[8.4](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10#name-arbitrary-topmost-with-cust)|1|Regular unicast BGP, no service label from BGP.  The same arbitrary label is used by LSP on last hop, whether the payload is IPv4 or IPv6|
 |[8.5](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10#name-explicit-null-topmost-with-c)|2|Regular unicast BGP, no service label from BGP.  IPv6 explicit null label is used by LSP on last hop, for both IPv6 and IPv4.  This results in label of 2 with payload of an IPv4 packet, which isn't valid according to standards.|
 
-Section 8.1-8.3 use BGP-LU and thus two labels across the core. It is always an MPLS packet across last hop from P to PE, and the problem of determining what address family the payload belongs to on egress PE is solved with the second/inner label distributed from BGP.
+Modes 8.1-8.3 use BGP-LU and thus two labels across the core. There is always an MPLS packet across last hop from P to PE, even with implicit null, and the problem of determining what address family the payload belongs to on the PE is solved with the second/inner label distributed in BGP.
 
-Section 8.4 and 8.5 use no inner label, and the egress PE receives both IPv4 and IPv6 packets from the last P with the same label.  That label will either be '2' (technically invalid for an IPv4 payload), or an arbitrary label it signalled for its IPv6 loopback.  In either case the label does not convey the IP version of the packet within.  So the PE needs to inspect the payload twice, once to check the IP version, and then to find the destination IP in the IP header and route it based on the appropriate table.
+Modes 8.4 and 8.5 use no inner label, so the egress PE receives both IPv4 and IPv6 packets from the last P with the same label.  That label will either be '2' (technically invalid for an IPv4 payload), or an arbitrary label it signalled for its IPv6 loopback.  In either case the label does not convey the IP version of the packet within.  So the PE needs to inspect the payload twice, once to check the IP version, and then to find the destination IP in the IP header and route it based on the appropriate table.
 
-There is no mode defined which uses LSP mode 3 (PHP / implicit null) without BGP-LU.  Implicit null with no service label means a raw IPv4 packet is sent between P and PE, likely the authors thought this did not qualify as the core should only transmit MPLS or IPv6 packets.
+There is no mode defined which uses implicit null without BGP-LU.  That would involve sending a raw IPv4 packet from P to PE, likely the authors excluded this as it breaks the concept of an "IPv6-only" core.
 
 ### IP header inspection
 
