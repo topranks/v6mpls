@@ -23,7 +23,7 @@ In the containerlab topologies we use the most basic network of this kind possib
 
 In the lab we use ISIS as the IGP protocol, configuring it on link and loopback interfaces.  We also enable MPLS, and for most of the tests use [SR-MPLS](https://www.rfc-editor.org/info/rfc8660/) with signalling carried in [IS-IS](https://www.rfc-editor.org/info/rfc8667/) itself.  For completeness I also tested [LDP](https://www.ietf.org/proceedings/85/rfc/rfc5036.txt) with JunOS, to validate the signalling protocol was irrelevant. 
 
-Each PE learn a route for the IPv6 loopback of the other PE from ISIS, and an MPLS LSP is built to use for traffic to that IP.
+Each PE learns a route for the IPv6 loopback of the other PE from ISIS, and an MPLS LSP is built to use for traffic to that IP.
 
 IBGP is enabled between these PE IPv6 loopbacks.  We enable both IPv6 and IPv4 address families on the IBGP sessions, and configure the PEs to use the methods described in [RFC 8950](https://www.rfc-editor.org/info/rfc8950/) to advertise IPv4 addresses with a next-hop of their IPv6 loopback.
 
