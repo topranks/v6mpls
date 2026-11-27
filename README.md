@@ -25,7 +25,7 @@ In the lab we use ISIS as the IGP protocol, configuring it on link and loopback 
 
 Each PE learns a route for the IPv6 loopback of the other PE from ISIS, and an MPLS LSP is built to use for traffic to that IP.
 
-IBGP is enabled between these PE IPv6 loopbacks.  We enable both IPv6 and IPv4 address families on the IBGP sessions, and configure the PEs to use the methods described in [RFC 8950](https://www.rfc-editor.org/info/rfc8950/) to advertise IPv4 addresses with a next-hop of their IPv6 loopback.
+IBGP is enabled between the PE IPv6 loopbacks.  We enable both IPv6 and IPv4 address families on the IBGP sessions, and configure the PEs to use the methods described in [RFC 8950](https://www.rfc-editor.org/info/rfc8950/) to advertise IPv4 addresses with a next-hop of their IPv6 loopback.
 
 The CE devices have two EBGP sessions to the PEs.  One over the IPv6 addressing on the link from PE to CE, with the IPv6 address fam enabled, and another over the IPv4 addresses on the link, with the IPv4 address fam.  The IPv4 addresses on the PE side of these links are the only IPv4 addresses on the core network.
 
