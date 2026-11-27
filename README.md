@@ -33,7 +33,7 @@ The CE devices have two EBGP sessions to the PEs.  One over the IPv6 addressing 
 
 The IPv4 route PE1 learns from CE1 is announced to PE2 with a next-hop of the PE1 IPv6 loopback address.  The question we want to answer is what will PE2 do with this route?  Given that the next-hop is an IPv6 address - _reachable via an MPLS path_ - will the route be installed?  And how will the data-plane encapsulation work on the wire for traffic to this destination?
 
-## Some Background
+## The Gory Details
 
 ### MPLS Origins
 
