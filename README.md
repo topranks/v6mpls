@@ -2,7 +2,7 @@
 
 Can an MPLS network built on an IPv6-only core transit IPv4 packets?  An expired [internet draft](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10) describes several ways to do this with existing protocols, and indeed there may be more.  But it was never adopted and what vendors support is unclear.
 
-This repo contains several [containerlab](https://containerlab.dev/) topologies to test what does and doesn't work across Juniper, Arista and Cisco IOS-XR.
+This repo contains several [containerlab](https://containerlab.dev/) topologies to test what does and doesn't work across Juniper, Arista and Cisco IOS-XR, as well as analysis from a protocols perspective.
 
 ## Introduction
 
