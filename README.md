@@ -76,7 +76,7 @@ Our priority in this post is to avoid having to send labels in BGP, and instead 
 
 ### 4PE
 
-The [4PE](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10) draft tries to codify how IPv4 packets can be sent over a core MPLS network.  Rather than define new protocol elements it rather describes how existing building blocks can be used to achieve the desired result.  IMO it is not the easiest read, but to surmise it describes the following deployment options:
+The [4PE](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-core-4pe-10) draft tries to codify how IPv4 packets can be sent over a core MPLS network.  Rather than define new protocol elements it describes how existing building blocks can be used to achieve the desired result.  IMO it is not the easiest read, but to surmise it describes the following deployment options:
 
 |Section|LSP Mode|Description|
 |-------|-----------|--------|
