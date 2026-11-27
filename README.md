@@ -39,7 +39,7 @@ The IPv4 route PE1 learns from CE1 is announced to PE2 with a next-hop of the PE
 
 It is easy to forget today that MPLS was in development before longest-prefix matches in hardware were possible.  Back when telco's were pushing technologies such as [ATM](https://en.wikipedia.org/wiki/Asynchronous_Transfer_Mode), which switched "cells" based on exact-matches of fixed-length IDs.  MPLS initially aimed to bridge this gap and provide a way for high-speed forwarding of IP packets using similar hardware.  [RFC 3031](https://www.rfc-editor.org/info/rfc3031/#section-2.1) alludes to this stating _"MPLS forwarding can be done by switches which are capable of doing label lookup and replacement, but are either not capable of analyzing the network layer headers, or are not capable of analyzing the network layer headers at adequate speed."_
 
-By the time MPLS was being widely deployed hardware had begun to catch up, and high-speed IP forwarding ASICs were becoming available.  Nonetheless this history is worth bearing in mind when examining how MPLS operates.  Many design choices seek to minimise the number of packet header inspections needed, or forwarding table lookups required.
+By the time MPLS was being widely deployed hardware had begun to catch up, and hardware-based forwarding of IP packets was getting more common.  Nonetheless the history is worth bearing in mind when examining how MPLS operates.  Many design choices seek to minimise the number of packet header inspections needed, or forwarding table lookups required.
 
 ### Ultimate Hops and Pops
 
@@ -47,7 +47,7 @@ This is not, in fact, a cheesy 80s hip hop compilation.
 
 [Penultimate Hop Popping](https://www.rfc-editor.org/info/rfc3031/#section-3.16) (PHP) defines a method by which the last 'P' router can **pop** the outer label from a packet before it is sent to the egress PE.  This is also known as *implicit null*.  The RFC explains that it allows the egress PE *"to do a single lookup"* on the resulting packet, rather than having to first look at the popped label and then examine what's inside.  The rationale for this optimisation is probably best considered in light of the previous section.
 
-If the last P router *does not* remove the outer label we call it **ultimate hop popping" (UHP)**.  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  The standards give us two variants of this option:
+If the last P router *does not* remove the outer label we call it **ultimate hop popping" (UHP)**.  Meaning that label is instead popped at the _ultimate hop_, the egress PE.  The standards give us two variants of this mode:
 
 * *Explicit-null* means the last P router swaps the incoming label with a well-known generic one
   * 0 is used if the LSP is built for an IPv4 prefix
@@ -62,20 +62,13 @@ Putting it all together leaves us with three separate ways the last P router can
 |2| **UHP / Explicit Null** | SWAP → 0 (IPv4) / 2 (IPv6) | 0 (IPv4 FEC) / 2 (IPv6 FEC) | P=1, E=1 |
 |3| **UHP / Non-Null** | SWAP → nomral label | Normal label | P=1, E=0 |
 
-NOTE: I called this the "LSP Mode" as the phrasing for what to call it is muddled, and I don't like saying "penultimate" over and over.  
-NOTE 2: The OSPFv3 flags for SR are similar, but "P" is called "NP".
+### BGP-LU, Label Stacks and Overlays
 
-### BGP-LU, VPNv4, Label Stacks and Overlays
+To add to the fun there are also several BGP address families which include a label attribute when announcing routes.  When these address families are used the ingress PE will add the label from BGP as an "inner" or "service" label.  
 
-To add to the fun there are also several BGP address families which include a label attribute when announcing routes.  When these address families are used the ingress PE will add the label from BGP as an "inner" or "service" label.  The label matching the LSP that gets us to the BGP next-hop (remote PE loopback) is then added as usual, and the inner label is tunnelled all the way to the egress PE.
-
-There are various BGP variants that do this, including VPNv6 and EVPN, but I'll note two here specifically:
-
-**VPNv4**: This is used for MPLS-based L3VPNs, where PEs allocate a label-per-VRF.  Service labels are used to identify what VRF incoming packets belong to, but in this post I want to focus on the global routing table so I didn't look into it in depth.
-**BGP-LU**: This does something similar, however it is used for routes 
+This is then tunnelled across the network all the way to the egress Pe
 
 
-It then finds the label associated with the BGP next-hop IP, (or more in SR if traffic engineering is used).
 
 
 
