@@ -92,13 +92,13 @@ Section 8.4 and 8.5 use no inner label, and the egress PE receives both IPv4 and
 
 ### IP header inspection
 
-The original MPLS standards are a little unclear about when routers may need to inspect the IP payload of labelled packets.  Clearly at the time they were written many hardware platforms were not capable of recirculating a packet back through the header inspection/lookup process after popping a label.  Especially the type of switches considered for 'P' router function.
+The original MPLS standards are a little unclear about when routers may need to inspect the IP payload of labelled packets.  We know many platforms of the time were unable to do this kind of packet recirculation and inspect headers multiple times (still true today in some cases), but its worth knowing what the standards say:
 
 [RFC3031 section 2.1](https://www.rfc-editor.org/info/rfc3031/#section-2.1) states that _"In the MPLS forwarding paradigm, once a packet is assigned to a FEC, no further header analysis is done by subsequent routers; all forwarding is driven by the labels."_
 
 [RFC3032 section 2.2](https://www.ietf.org/ietf-ftp/rfc/rfc3032.html#section-2.2) states that _"the identity of the network layer protocol must be inferable from the value of the label which is popped from the bottom of the stack"_.  But then immediately goes on to say that _"the label must be one which is used ONLY for packets of a particular network layer, or the label must be one which is used ONLY for a specified set of network layer protocols, where packets of the specified network layers can be distinguished by inspection of the network layer header."_
 
-That last sentence would seem to provide for a single label to carry either IPv4 or IPv6 packets, and allow routers to inspect the "network layer header" (IP version) to distinguish them, the behaviour required in 4PE modes 8.4 and 8.5.
+That last sentence would seem to provide for a single label to carry both IPv4 or IPv6 packets, and allow routers to inspect the "network layer header" (IP version) to distinguish between them (the behaviour required in 4PE modes 8.4 and 8.5.)
 
 ## Labs
 
