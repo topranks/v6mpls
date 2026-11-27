@@ -17,7 +17,7 @@ The question piqued my interest for two reasons:
 
 We have an MPLS network, composed of PE and P routers, which only have IPv6 addressing on their links, and only an IPv6 loopback address.
 
-In the containerlab topologies we use the most basic network of this kind possible, with three core routers, PE1, P and PE2, and two CEs, one connected to each PE.
+In the containerlab topologies we use the most basic network of this kind possible, with three core routers, PE1, P and PE2, as well as two CEs, one connected to each PE.
 
 ### Protocols
 
