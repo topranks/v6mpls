@@ -90,7 +90,7 @@ Section 8.1-8.3 use BGP-LU and thus two labels across the core. It is always an 
 
 Section 8.4 and 8.5 use no inner label, and the egress PE receives both IPv4 and IPv6 packets from the last P with the same label.  That label will either be '2' (technically invalid for an IPv4 payload), or an arbitrary label it signalled for its IPv6 loopback.  In either case the label does not convey the IP version of the packet within.  So the PE needs to inspect the payload twice, once to check the IP version, and then to find the destination IP in the IP header and route it based on the appropriate table.
 
-There is no mode defined which uses LSP mode 3 (PHP / implicit null) without BGP-LU.
+There is no mode defined which uses LSP mode 3 (PHP / implicit null) without BGP-LU.  Implicit null with no service label means a raw IPv4 packet is sent between P and PE, likely the authors thought this did not qualify as the core should only transmit MPLS or IPv6 packets.
 
 ### IP header inspection
 
@@ -102,11 +102,7 @@ The original MPLS standards are a little unclear about when routers may need to 
 
 That last sentence would seem to provide for a single label to carry both IPv4 or IPv6 packets, and allow routers to inspect the "network layer header" (IP version) to distinguish between them (the behaviour required in 4PE modes 8.4 and 8.5.)
 
-## Labs
-
-Currently there are four example lab topologies that can be run simply in containerlab.
-
-### Images
+## Labs Images
 
 The labs have containerlab 'kinds' that expect to find the following image names locally available in docker.  Users may need to "docker tag" the name of their equivalent images to match these, or update the YAML topology files to reference the names they have locally:
 
@@ -119,7 +115,7 @@ The labs have containerlab 'kinds' that expect to find the following image names
 
 The linux image should have FRR installed.  The vanilla debian container image with _apt install frr_ should be sufficient.
 
-### Containerlab topologies, configs and test results.
+### Single-Vendor Labs
 
 The topology files, startup configs and results of testing can be found in the relevant directories in this repo:
 
@@ -128,11 +124,25 @@ The topology files, startup configs and results of testing can be found in the r
 [Arista cEOS](sr-mpls-v6-arista)  
 [Juniper vJunos Router - LDP](ldp-mpls-v6-junos)  
 
+### Multi-Vendor Labs
+
+There are also some labs defined with nodes from different vendors to test interoperability:
+
+[Arista PE + Juniper PE with Juniper P](interop-sr-pjunos)
+[Arista PE + Juniper PE with Arista P](interop-sr-parista)
+[Arista PE + Juniper PE with two PS, one Juniper, one Arista](interop-sr-4node)
+
 ## Result Summary
 
-More detailed information on how each lab performed is available in the above 
+More detailed analysis of how each vendor behaved can be found in the specific lab directories.
 
-## Standards
+### Juniper
+
+All LSP Modes work in the Juniper labs, though at first I could not get any of them to work.  It seems the trick for LSP Modes 1 and 2 is to ensure that "family inet" is configured (with no addressing) on the PE interfaces connected to the P router.  Without that the packets make it to the egress PE, but they drop the packets on receipt.  When we add "family inet" to the interface the packet arrives on the Juniper pops the MPLS label, and then inspects the payload to see what IP version it is, and routes it.  This even happens when the invalid combination of Label 2 + IPv4 payload arrives.
+
+### Arista 
+
+## Conclusion
 
 
 Two more statements from RFC 3031 which will become relevant are:
