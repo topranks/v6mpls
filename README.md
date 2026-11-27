@@ -138,11 +138,38 @@ More detailed analysis of how each vendor behaved can be found in the specific l
 
 ### Juniper
 
-All LSP Modes work in the Juniper labs, though at first I could not get any of them to work.  It seems the trick for LSP Modes 1 and 2 is to ensure that "family inet" is configured (with no addressing) on the PE interfaces connected to the P router.  Without that the packets make it to the egress PE, but they drop the packets on receipt.  When we add "family inet" to the interface the packet arrives on the Juniper pops the MPLS label, and then inspects the payload to see what IP version it is, and routes it.  This even happens when the invalid combination of Label 2 + IPv4 payload arrives.
+All LSP Modes work in the Juniper labs, though at first I could not get any of them to work.  It seems the trick for LSP Modes 1 and 2 is to ensure that "family inet" is configured (with no addressing) on the PE interfaces connected to the P router.  
+
+Without that the packets make it to the egress PE, but they drop the packets on receipt.  When we add "family inet" to the interface the packet arrives on the Juniper pops the MPLS label, and then **inspects the payload to see what IP version it is, and routes it.**  This even happens when the invalid combination of Label 2 + IPv4 payload arrives.
+
+To make LSP mode 3 (implicit null) work the "family inet" also needs to be configured on the P router side of this link.  I guess that makes sense to enable it transmit the raw IPv4 packet.
+
+BGP-LU modes did not seem to be possible, configuring "extended-nexthop" - required to set IPv6 next-hops for IPv4 routes - does not seem to be an option within the "labelled-unicast" address family.  If you hack it by using a routing-policy to change the next-hop to the IPv6 loopback on the far-side PE traffic will flow, but that's messy.
 
 ### Arista 
 
+
+Automatic inner-label - 
+
+### Cisco
+
+### Arista + Juniper together
+
 ## Conclusion
+
+It seems this can work, and even interoperate, at least with some of the vendors.  But without a proper standard every vendor needs to be tested.  Cisco may well work with actual hardware or on one of their other operating systems.
+
+BGP-LU does not seem to work at all.  None of the vendors support using IPv6 next-hops for IPv4 routes with the labelled unicast address family.
+
+### Standards
+
+Of the modes that worked, I would rank them this way in order of compliance:
+
+|Rank|LSP Mode|Description|
+|1|1|Arbitary label used between P and PE|This seems to break none of the standards, assuming we accept RFC3032 when it suggests checking the network-layer header to find the protocol is acceptable.|
+|2||3|Implicit-null|This seems mostly ok too, we transmit a raw IPv4 packet over the link from P to PE.  What maybe doesn't fit here is that we are supposed to have an "IPv6 only core" yet we are sending raw IPv4 packets (EType 0x800) over it.|
+|3|3|Implicit-null with arista nerd hack|
+|3|Explicit null|While Arista and Juniper seem fine with this, it definitely looks like a protocol violation to have a packet with MPLS Label=2, S=1, and an IPv4 payload.  "It doesn't matter if it works" I guess, but 
 
 
 Two more statements from RFC 3031 which will become relevant are:
