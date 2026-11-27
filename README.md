@@ -72,7 +72,7 @@ This results in two labels on the packet, which can be thought of as a "stack" (
 
 Several other BGP address families, like [VPNv4](https://www.rfc-editor.org/info/rfc4364/) and [EVPN](https://www.rfc-editor.org/info/rfc9136/), also send labels along with routes.  In both cases the service label included in BGP announcements represents a specific VRF table on the egress PE.
 
-Our priority in this post is to avoid having to send labels in BGP, and instead explore what happens when plain old unicast BGP is used.  So we'd rather not use BGP-LU.  We definitely do not want to use VPNv4 or EVPN as we do not want to put the CE IPv4 routes into a VRF, though that is also a viable approach.
+Our desire in this post is to avoid having to send labels in BGP, and instead explore what happens when plain old unicast BGP is used.  So we'd rather not use BGP-LU.  We definitely do not want to use VPNv4 or EVPN, as we do not want to put the CE IPv4 routes into a VRF, though that is also a viable approach.
 
 ### 4PE
 
