@@ -54,7 +54,7 @@ If the last P router *does not* remove the outer label we call it **ultimate hop
   * 2 is used if the LSP is built for an IPv6 prefix
 * *Non-null* means the last P router swaps the incoming label with an arbitrary label chosen by the PE
 
-Putting it all together leaves us with three separate ways the last P router can behave.  This behaviour is controlled by how the PE sets up the LSP:
+Putting it all together leaves us with three separate ways the last P router can behave.  For this post I will call this the "LSP mode" and give each a number, as we come back to them frequently.  Which gets used depends on how the PE signals the LSP to begin with, as shown below:
 
 |No| LSP Mode | P router label operation | PE LSP Signalling: LDP Label | PE LSP Signalling: SR IS-IS Flags |
 |--|---|---|---|---|
@@ -89,6 +89,8 @@ The [4PE](https://datatracker.ietf.org/doc/html/draft-mishra-idr-v4-islands-v6-c
 Section 8.1-8.3 use BGP-LU and thus two labels across the core. It is always an MPLS packet across last hop from P to PE, and the problem of determining what address family the payload belongs to on egress PE is solved with the second/inner label distributed from BGP.
 
 Section 8.4 and 8.5 use no inner label, and the egress PE receives both IPv4 and IPv6 packets from the last P with the same label.  That label will either be '2' (technically invalid for an IPv4 payload), or an arbitrary label it signalled for its IPv6 loopback.  In either case the label does not convey the IP version of the packet within.  So the PE needs to inspect the payload twice, once to check the IP version, and then to find the destination IP in the IP header and route it based on the appropriate table.
+
+There is no mode defined which uses LSP mode 3 (PHP / implicit null) without BGP-LU.
 
 ### IP header inspection
 
